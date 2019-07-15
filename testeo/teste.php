@@ -23,6 +23,8 @@ class ClaseTesteo extends ConexionOracle
         $stmt = oci_parse($this->con2, $sql);
         oci_execute($stmt);
        /*  */
+
+    
 		for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
             
             //llamar al metodo comprobar conexion de las base de datos remotos
@@ -33,63 +35,18 @@ class ClaseTesteo extends ConexionOracle
             $nomb= trim($row["DB_INSTANCE"]);
             $dblink= trim($row["DB_NAME"]);
             
-            //if($row['CT_CLAVE']!=401){
-                //$conex= $this->ProbarConexionBaseRemota($host,$base,$user,$pass);
-                $cnxdblink= $this->ProbarConexionbdlink($dblink); 
+                $conex= 0;//$this->ProbarConexionBaseRemota($host,$base,$user,$pass);
                 $this->cnx[$i]= $valor =  array('clve' => $row['CT_CLAVE'],
                                                  'nomb' => $row['DB_INSTANCE'],
                                                  'host' => $row['IP'],
                                                  'base' => $row['SID'],
                                                  'user' => $row['USUARIO'],
                                                  'pass' => $row['CLAVE'],
-                                                 'cone' => $cnxdblink
+                                                 'cone' => $conex
                                                 );  
-            //}
-            
         }
         //$this->loteprimer(); 
     }
-
-
-    public function loteprimer(){
-        $tamanioarry=sizeof($this->cnx); 
-        //echo "-s-s-s-s-". $tamanioarry; 
-      
-        for ($i=0; $i<10; $i++){   
-            $nomb=$this->cnx[$i]["nomb"];    
-            $host=$this->cnx[$i]["host"];
-            $base=$this->cnx[$i]["base"];
-            $user=$this->cnx[$i]["user"];
-            $pass=$this->cnx[$i]["pass"];
-           
-            $conex= $this->ProbarConexionBaseRemota($host,$base,$user,$pass);
-            echo "$conex,  $nomb <br>"; 
-        }
-      
-        for ($i=10; $i<19; $i++){       
-            $nomb=$this->cnx[$i]["nomb"];    
-            $host=$this->cnx[$i]["host"];
-            $base=$this->cnx[$i]["base"];
-            $user=$this->cnx[$i]["user"];
-            $pass=$this->cnx[$i]["pass"];
-            $conex= $this->ProbarConexionBaseRemota($host,$base,$user,$pass);
-            echo "$conex,  $nomb <br>"; 
-        } 
-
-        
-        for ($i=20; $i<$tamanioarry; $i++){  
-            $nomb=$this->cnx[$i]["nomb"];    
-            $host=$this->cnx[$i]["host"];
-            $base=$this->cnx[$i]["base"];
-            $user=$this->cnx[$i]["user"];
-            $pass=$this->cnx[$i]["pass"];
-            $conex= $this->ProbarConexionBaseRemota($host,$base,$user,$pass);
-            echo "$conex,  $nomb <br>"; 
-        }
-
-
-    }
-
 
 
     //metodo privado para testing de las bases de datos remotas 
@@ -97,10 +54,9 @@ class ClaseTesteo extends ConexionOracle
     {
         $checar=0; 
         try{    
-            //$stringconex= "oci:dbname=$host/$daba;charset=utf8 ,$user ,$pass";
-            //echo "$stringconex <br>"; 
             $base= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
             $checar=1;
+            $this->getInformacionCedulas($base); 
         }catch(PDOException $e){
              //echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
              $checar=0;
@@ -108,37 +64,79 @@ class ClaseTesteo extends ConexionOracle
         return $checar; 
     }
 
-    public function ProbarConexionbdlink($dblink){
-        $checar=0; 
-       
-        $sql = "SELECT 1 AS coneA  FROM DUAL@ ".$dblink."";
-
-        echo "$sql <br>"; 
-       //$stmt = oci_parse($this->con2, $sql);
-       //$conex= oci_execute($stmt);
-       //if($conex){
-       //    $checar=1; 
-       //    //$this->cerrarConexiondblink($dblink);
-       //}
-       //return $checar;   
+    public function getconexionremota(){
+        //echo $this->cnx[0]['host']; 
+        $co = oci_connect($this->cnx[0]['user'], $this->cnx[0]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[0]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[0]['base'].")))");
+            // Seleccion de la base de datos 
+            if(!$co){
+                $error = oci_error();
+                trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
+               echo 'u.u   xdxxx';
+            }else{
+                $this->getInformacionCedulas(); 
+               echo "conexion exitosa de php a oracle <br> xxsss";
+            }
     }
 
-    public function cerrarConexiondblink($dblink){
-        //$sql = "COMMIT";
-        //$sql = "ROLLBACK";
-        //$sql="ALTER SESSION CLOSE DATABASE LINK $dblink";
-        //$sql="EXECUTE DBMS_SESSION.CLOSE_DATABASE_LINK ($dblink)";
-        $sql="ALTER SESSION SET SESSION_CACHED_CURSORS = 0; "; 
-        $sql.="DBMS_SESSION.CLOSE_DATABASE_LINK ('$dblink')"; 
-        $sql.="ALTER SESSION SET SESSION_CACHED_CURSORS = 50; "; 
-        echo "$sql <br>"; 
-        //$stmt = oci_parse($this->con2, $sql);
-        //$conex= oci_execute($stmt);
+    public function getInformacionCedulas($co){
+        $inf=array(); 
+        $sql="SELECT
+        CUENTAS.CCDES CUENTA,
+        CEDULAS.CONTCT CENTRO_TRABAJO,
+        CEDULAS.CONTNUM CEDULA,
+        GetNumActivoxCed(CEDULAS.CONTCT,CEDULAS.CONTNUM),
+        CEDULAS.CONTCC,
+        CEDULAS.CONTSC,
+        CEDULAS.CONTSSC,
+        CEDULAS.CONTSSSC,
+        CEDULAS.CONTDES,
+        CEDULAS.CONTFECHADQ,
+        CEDULAS.CONTFACTURA,
+        CEDULAS.CONTCOSTO,
+        CEDULAS.CONTORIGBIEN,
+        CEDULAS.CONTASADEP,
+        CEDULAS.CONTFECHCAP,
+        CEDULAS.CONTFECHDEP,
+        CEDULAS.CONTPOLIZA,
+        CEDULAS.CONTREFALTAS,
+        CEDULAS.CONTREFBAJAS,
+        CEDULAS.CONTABONO,
+        CEDULAS.CONTFECHMOV,
+        CEDULAS.CONTDEPMEN,
+        CEDULAS.CONTDEPANUAL,
+        CEDULAS.CONTDEPACUM,
+        CEDULAS.CONTSALXDEP,
+        CEDULAS.CONTBAJADEP,
+        CEDULAS.CONTMESDEP,
+        CEDULAS.CONTFECHDETDEP,
+        CEDULAS.CONTFECHBAJA
+        FROM CEDULAS,CUENTAS
+        WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
+        ORDER BY 2,3;"; 
+
+        $stmt = oci_parse($co, $sql);
+        oci_execute($stmt);
+
+        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
+            $inf=array('cuenta'=> $row['CUENTA']);
+        }
+        oci_free_statement($stmt);
+        oci_close($co);
+
+        echo json_encode($inf);
     }
+
+
+
+
+
+
+
 
     //metodo publico de acceso para llamar a metodo privados
     public function getMetodoAcceso(){
         $this->getDatosConexionesRemotas(); 
+        $this->getconexionremota();
         //echo json_encode($this->cnx); 
     }
 
