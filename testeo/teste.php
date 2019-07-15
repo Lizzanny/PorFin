@@ -110,27 +110,36 @@ class ClaseTesteo extends ConexionOracle
 
     public function ProbarConexionbdlink($dblink){
         $checar=0; 
-        
+       
         $sql = "SELECT 1 AS coneA  FROM DUAL@ ".$dblink."";
 
-        //echo "$sql <br>"; 
-        $stmt = oci_parse($this->con2, $sql);
-        $conex= oci_execute($stmt);
-        if($conex){
-            $checar=1; 
-            
-            $sql = "rollback";
-            //echo "$sql <br>"; 
-            $stmt = oci_parse($this->con2, $sql);
-            $conex= oci_execute($stmt);
-        }
-        return $checar;   
+        echo "$sql <br>"; 
+       //$stmt = oci_parse($this->con2, $sql);
+       //$conex= oci_execute($stmt);
+       //if($conex){
+       //    $checar=1; 
+       //    //$this->cerrarConexiondblink($dblink);
+       //}
+       //return $checar;   
+    }
+
+    public function cerrarConexiondblink($dblink){
+        //$sql = "COMMIT";
+        //$sql = "ROLLBACK";
+        //$sql="ALTER SESSION CLOSE DATABASE LINK $dblink";
+        //$sql="EXECUTE DBMS_SESSION.CLOSE_DATABASE_LINK ($dblink)";
+        $sql="ALTER SESSION SET SESSION_CACHED_CURSORS = 0; "; 
+        $sql.="DBMS_SESSION.CLOSE_DATABASE_LINK ('$dblink')"; 
+        $sql.="ALTER SESSION SET SESSION_CACHED_CURSORS = 50; "; 
+        echo "$sql <br>"; 
+        //$stmt = oci_parse($this->con2, $sql);
+        //$conex= oci_execute($stmt);
     }
 
     //metodo publico de acceso para llamar a metodo privados
     public function getMetodoAcceso(){
         $this->getDatosConexionesRemotas(); 
-        echo json_encode($this->cnx); 
+        //echo json_encode($this->cnx); 
     }
 
 }//endmyClass
