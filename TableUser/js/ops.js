@@ -78,6 +78,7 @@ $( "#guardaUsuario" ).click(function() {
 	}else if(cvero == ''){
 		$('#claverolx').focus();
 	}else{
+    //console.log('todo bien');
 		$.ajax({
     		url: 'php/funciones.php',
     		type: 'POST',
@@ -85,23 +86,28 @@ $( "#guardaUsuario" ).click(function() {
     		data: {
      		 	"opcion": 'saveUser',
      		 	"ccoctx" : ccoct,
-				"cveccx" : cvecc,
-				"nunnax" : nunna,
-				"nomusx" : nomus,
-				"usuarx" : usuar,
-				"passwx" : passw,
-				"cverox" : cvero
+				  "cveccx" : cvecc,
+				  "nunnax" : nunna,
+				  "nomusx" : nomus,
+				  "usuarx" : usuar,
+				  "passwx" : passw,
+				  "cverox" : cvero
     		}
   		}).done(function(res) {
   	 		if (res.opc == 1) {
   	 			alertify.success(res.msj);
+          limpia();
+        $('#usuario').DataTable().ajax.reload();
   	 		}else if(res.opc == 2){
   	 			alertify.error(res.msj);
+          limpia();
+        $('#usuario').DataTable().ajax.reload();
   	 		}else{
   	 			alertify.warning(res.msj);
-  	 		}
-        limpia();
+          limpia();
         $('#usuario').DataTable().ajax.reload();
+  	 		}
+        
   		}).fail(function() {
     		console.log("error");
   		})

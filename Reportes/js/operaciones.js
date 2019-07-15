@@ -1,3 +1,7 @@
+$( document ).ready(function() {
+  getcts();
+});
+
 function getcts(){
         $.ajax({
             url: '../Reportes/php/operaciones.php',

@@ -55,7 +55,7 @@
                 <option value="">SELECCIONE UN ROL</option>
                 <option value="RFINPRESUP">INFORMACIÓN FINANCIERA</option>
                 <option value="RFINCONTABLE">INFORMACIÓN CONTABLE</option>
-                <option value="AMBOS">INFORMACIÓN FINANCIERA/CONTABLE</option>
+                <option value="RFINADM">INFORMACIÓN FINANCIERA/CONTABLE</option>
               </select> 
             </div>
           </div>

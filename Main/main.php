@@ -38,7 +38,7 @@
                         Inicio
                     </a>
                 </li>
-<?php if($user=='LIZZ3' && $rol=='RFINPRESUP' || $rol == 'RFINCONTABLE'){?>
+<?php if($rol=='RFINADM'){?>
                 <li>
                     <a href="../TableUser/TableUsers.php">
                         <i class="fas fa-table"></i>
@@ -68,7 +68,7 @@
                         saldos de inversion
                     </a>
                 </li>-->
-<?php if($rol == 'RFINPRESUP'){ ?>
+<?php if($rol == 'RFINPRESUP' || $rol=='RFINADM'){ ?>
                 <li>
                     <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <i class="fas fa-coins"></i>
@@ -81,11 +81,12 @@
                         <li><a href="../repof/rgpct.php">Reporte de gastos por partida y centro de trabajo</a></li>
                         <li><a href="../repof/rtpd.php">Reporte por tipo de gasto y división</a></li>
                         <li><a href="../repof/rgppct.php">Reporte de gastos por partida y centro de trabajo(Hacienda)</a></li>
+                        <li><a href="../SICOPLOCAL/Flujo/flujoprincipal.php">Reporte de flujo de efectivo</a></li>
                     </ul>
                 </li>
 <?php }
 
-if($rol == 'RFINCONTABLE'){ ?>
+if($rol == 'RFINCONTABLE' || $rol=='RFINADM'){ ?>
                 <li>
                     <a href="#pageSubmenu1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <i class="fas fa-balance-scale"></i> 
@@ -95,9 +96,11 @@ if($rol == 'RFINCONTABLE'){ ?>
                     <ul class="collapse list-unstyled" id="pageSubmenu1">
                         <li><a href="#">Estado de situación financiera</a></li>
                         <li><a href="#">Cédula financiera de cuenta</a></li>
-                        <li><a href="#">Saldos de activo fijo por cuenta y centros de costo.</a></li>
+                        <li><a data-toggle='modal' data-target='#generar'>Saldos de activo fijo por cuenta y centros de costo.</a></li>
                     </ul>
                 </li>
 <?php } ?>
             </ul>
         </nav>
+
+        

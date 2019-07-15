@@ -25,7 +25,7 @@ class operaciones extends ConexionOracle{
 			}
 		}else{
 			$strusu="rol admin";
-			//obtenerCtgxv($this->cetxd, 'si');
+			$this->obtenerCtgxv($this->cetxd, 'si');
 		}
 		//echo "$strusu";
 	}
@@ -46,12 +46,16 @@ class operaciones extends ConexionOracle{
 		oci_execute($stmt);
 		$lista='';
 	
-			
+			$lista.='<option value="" selected="selected">SELECCIONE EL CENTRO DE TRABAJO</option>';
 		for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-			if($row[0] != $centro){
-				$lista.='<option value="" selected="selected">SELECCIONE EL CENTRO DE TRABAJO</option>';
+			if($listar == 'no'){
+				if($row[0]==$centro){
+				$lista.="<option selected='selected' value='$row[0]'> $row[1] </option>";
+				}
+			}else{
+				$lista.="<option value='$row[0]'> $row[1] </option>";
 			}
-			$lista.="<option value='$row[0]'> $row[1] </option>";
+			
 		}
 
 		

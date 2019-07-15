@@ -74,15 +74,41 @@ class UserFunctions extends ConexionOracle{
 		$opc = 2;
 		$array = array();
 
-		if($this->verificaUser($usuar) == '1'){
+		if($this->verificaUser($nunna) == '1'){
 			$sql1 = "INSERT INTO USR_USUARIOS(USUARIO, USR_PASSW, USR_NOMBRE, CENCOS_CT_CLAVE, CENCOS_CLAVE, USR_ACTIVO, RH_CENTRAB, RH_NUMNOMINA) 
 				VALUES('$usuar', '$passw', '$nomus', $ccoct, $cvecc, 1, $ccoct, $nunna)";
 
 			$stmt1 = oci_parse($this->conO, $sql1);
 			oci_execute($stmt1);
 			$cont = oci_num_rows($stmt1);
-			if($cont != 0){
-				$this->usrRol($usuar, $cvero);
+			if($stmt1){
+				//$this->usrRol($usuar, $cvero);
+				//
+				$sql = "INSERT INTO USR_USUARIOROL (USUARIO, ROL_NAME) VALUES ('$usuar', '$cvero')";
+				$stmt = oci_parse($this->conO, $sql);
+				oci_execute($stmt);
+		
+				//$cont = oci_num_rows($stmt);
+				if($stmt){
+					$msj = '¡Exito! Se ha agregado correctamente al usuario.';
+					$opc = 1;
+				}else{
+					$msj = 'Sucedio un error al intentar agregar un usuario';
+					$opc = 2;
+				}
+				
+		
+				$array = array('msj' => $msj,
+								'opc' => $opc );
+		
+				echo json_encode($array);
+			}else{
+				$msj = '¡Error! No ha sido posible registrar a este usuario.';
+				$opc = 2;
+				$array = array('msj' => $msj,
+						'opc' => $opc );
+
+				echo json_encode($array);
 			}
 
 		}else{
@@ -98,8 +124,8 @@ class UserFunctions extends ConexionOracle{
 		
 	}
 
-	public function verificaUser($usuar){
-		$sql = "SELECT * FROM USR_USUARIOS WHERE USUARIO = '$usuar'";
+	public function verificaUser($nunna){
+		$sql = "SELECT * FROM USR_USUARIOS WHERE RH_NUMNOMINA = '$nunna'";
 		$stmt = oci_parse($this->conO, $sql);
 		oci_execute($stmt);
 		//echo $sql.'<br>';
@@ -115,31 +141,18 @@ class UserFunctions extends ConexionOracle{
 		$msj = 'Sucedio un error al intentar agregar un usuario';
 		$opc = 2;
 		$array = array();
-		if($cvero != 'AMBOS'){
-			$sql = "INSERT INTO USR_USUARIOROL (USUARIO, ROL_NAME) VALUES ('$usuar', '$cvero')";
-			$stmt = oci_parse($this->conO, $sql);
-			oci_execute($stmt);
+		
+		$sql = "INSERT INTO USR_USUARIOROL (USUARIO, ROL_NAME) VALUES ('$usuar', '$cvero')";
+		$stmt = oci_parse($this->conO, $sql);
+		oci_execute($stmt);
 
-			$cont = oci_num_rows($stmt);
-			if($cont != 0){
-				$msj = '¡Exito! Se ha agregado correctamente al usuario.';
-				$opc = 1;
-			}
+		//$cont = oci_num_rows($stmt);
+		if($stmt){
+			$msj = '¡Exito! Se ha agregado correctamente al usuario.';
+			$opc = 1;
 		}else{
-			$sql = "INSERT INTO USR_USUARIOROL (USUARIO, ROL_NAME) VALUES ('$usuar', 'RFINCONTABLE')";
-			$stmt = oci_parse($this->conO, $sql);
-			oci_execute($stmt);
-			$cont = oci_num_rows($stmt);
-			if($cont != 0){
-				$sql2 = "INSERT INTO USR_USUARIOROL (USUARIO, ROL_NAME) VALUES ('$usuar', 'RFINPRESUP')";
-				$stmt2 = oci_parse($this->conO, $sql2);
-				oci_execute($stmt2);
-				$cont2 = oci_num_rows($stmt2);
-				if($cont2 != 0){
-					$msj = '¡Exito! Se ha agregado correctamente al usuario.';
-					$opc = 1;
-				}
-			}
+			$msj = 'Sucedio un error al intentar agregar un usuario';
+			$opc = 2;
 		}
 		
 

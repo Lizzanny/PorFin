@@ -1,0 +1,27 @@
+#tit{
+      font-family:"Times New Roman ";
+      /*Color del texto*/
+      color:#000000;
+      /*para centrar el texto*/
+      text-align:center;
+      /*margin: es para quitarle los margenes del texto*/
+      margin:0;
+      /*tamaño del texto*/
+      font-size: 20px;
+      /*para hacer un separado en la parte de abajo del texto*/
+      margin-bottom:20px ; 
+    }
+
+#tit1{
+      font-family:"Times New Roman ";
+      /*Color del texto*/
+      color:#000000;
+      /*para centrar el texto*/
+      text-align:center;
+      /*margin: es para quitarle los margenes del texto*/
+      margin:0;
+      /*tamaño del texto*/
+      font-size: 20px;
+      /*para hacer un separado en la parte de abajo del texto*/
+      margin-bottom:20px ; 
+    }
