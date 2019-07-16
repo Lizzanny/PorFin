@@ -73,7 +73,7 @@ class ClaseTesteo extends ConexionOracle
                 trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
                echo 'u.u   xdxxx';
             }else{
-                $this->getInformacionCedulas(); 
+                $this->getInformacionCedulas($co); 
                echo "conexion exitosa de php a oracle <br> xxsss";
             }
     }
@@ -112,13 +112,14 @@ class ClaseTesteo extends ConexionOracle
         CEDULAS.CONTFECHBAJA
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
-        ORDER BY 2,3;"; 
+        ORDER BY 2,3"; 
 
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);
 
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-            $inf=array('cuenta'=> $row['CUENTA']);
+            $inf=array('cuenta'=> $row['CUENTA'],
+                        'centro' => $row['CENTRO_TRABAJO']);
         }
         oci_free_statement($stmt);
         oci_close($co);
