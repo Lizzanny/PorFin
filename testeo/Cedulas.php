@@ -8,6 +8,7 @@
 */
 include_once '../Libs/ConexionOracle.php'; 
 include_once 'teste.php';
+//excel 
 class Cedulas extends ClaseTesteo{
 
   
@@ -72,6 +73,15 @@ class Cedulas extends ClaseTesteo{
         oci_close($co);
 
         echo json_encode($inf);
+        //
+        $this->hojaExecel($inf); 
+    }
+
+    public function hojaExecel(){
+        ///
+
+        
+
     }
     
 
