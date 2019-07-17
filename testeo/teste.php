@@ -36,7 +36,7 @@ class ClaseTesteo extends ConexionOracle
             $nomb= trim($row["DB_INSTANCE"]);
             $dblink= trim($row["DB_NAME"]);
             
-                $conex= 0;//$this->ProbarConexionBaseRemota($host,$base,$user,$pass);
+                $conex=$this->ProbarConexionBaseRemota($host,$base,$user,$pass);
                 $this->cnx[$i]= $valor =  array('clve' => $row['CT_CLAVE'],
                                                  'nomb' => $row['DB_INSTANCE'],
                                                  'host' => $row['IP'],
@@ -57,7 +57,6 @@ class ClaseTesteo extends ConexionOracle
         try{    
             $base= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
             $checar=1;
-            $this->getInformacionCedulas($base); 
         }catch(PDOException $e){
              //echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
              $checar=0;
@@ -77,6 +76,5 @@ class ClaseTesteo extends ConexionOracle
 }//endmyClass
 
     $ob = new ClaseTesteo();
-    //$ob->getMetodoAcceso();  
     $ob->cerrarConexion2(); 
 ?>

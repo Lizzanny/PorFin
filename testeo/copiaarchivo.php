@@ -12,24 +12,54 @@ include_once 'teste.php';
 class Cedulas extends ClaseTesteo{
 
   
-    public function getconexionremota(){
-
-        //echo $this->cnx[0]['host']; 
-        $co = oci_connect($this->cnx[0]['user'], $this->cnx[0]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[0]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[0]['base'].")))");
-            // Seleccion de la base de datos 
-            if(!$co){
-                $error = oci_error();
-                trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
-               //echo 'u.u   xdxxx';
-            }else{
-                $this->getInformacionCedulas($co); 
-               //echo "conexion exitosa de php a oracle <br> xxsss";
+    private function getconexionremota(){
+        $inf=array();  $ct0=array(); $ct1=array(); $ct2=array(); $ct3=array(); $ct4=array(); $ct5=array();
+        for($i=0; $i<=5; $i++){
+            if($this->cnx[$i]['cone']!=0){
+                $co = oci_connect($this->cnx[$i]['user'], $this->cnx[$i]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[$i]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[$i]['base'].")))");
+                if(!$co){
+                    $error = oci_error();
+                    trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
+                }else{
+                    if($i==0){
+                        $ct0=$this->getInformacionCedulas($co); 
+                    }
+                    if($i==1){
+                        $ct1=$this->getInformacionCedulas($co); 
+                    }
+                    if($i==2){
+                        $ct2=$this->getInformacionCedulas($co); 
+                    }
+                    if($i==3){
+                        $ct3=$this->getInformacionCedulas($co); 
+                    }
+                    if($i==4){
+                        $ct4=$this->getInformacionCedulas($co); 
+                    }
+                    if($i==5){
+                        $ct5=$this->getInformacionCedulas($co); 
+                    }
+                }
             }
+           
+        }
+        $inf=array('ct0'=> $ct0,
+                   'ct1'=> $ct1,
+                   'ct2'=> $ct2,
+                   'ct3'=> $ct3,
+                   'ct4'=> $ct4,
+                   'ct5'=> $ct5,
+
+                ); 
+
+        echo json_encode($inf);
+       
     }
 
-    public function getInformacionCedulas($co){
-        $inf=array(); 
-        $sql="SELECT
+    private function getInformacionCedulas($co){
+        $inf=array();  
+         
+        $sql="SELECT 
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
         CEDULAS.CONTNUM CEDULA,
@@ -38,7 +68,7 @@ class Cedulas extends ClaseTesteo{
         CEDULAS.CONTSC,
         CEDULAS.CONTSSC,
         CEDULAS.CONTSSSC,
-        CEDULAS.CONTDES,
+        NVL(CEDULAS.CONTDES, '----') AS CONTDES,
         CEDULAS.CONTFECHADQ,
         CEDULAS.CONTFACTURA,
         CEDULAS.CONTCOSTO,
@@ -49,7 +79,7 @@ class Cedulas extends ClaseTesteo{
         NVL(CEDULAS.CONTPOLIZA, '----') AS CONTPOLIZA,
         NVL(CEDULAS.CONTREFALTAS, '----') AS CONTREFALTAS,
         NVL(CEDULAS.CONTREFBAJAS, '----') AS CONTREFBAJAS,
-        CEDULAS.CONTABONO,
+        NVL(CEDULAS.CONTABONO, '0') AS CONTABONO,
         CEDULAS.CONTFECHMOV,
         CEDULAS.CONTDEPMEN,
         CEDULAS.CONTDEPANUAL,
@@ -67,26 +97,34 @@ class Cedulas extends ClaseTesteo{
         oci_execute($stmt);
 
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-           //if($row["CONTFECHDETDEP"]==null){
-           //    echo "CONTFECHDETDEP esta indefinido <br>"; 
-           //}
-           //var_dump($row["CONTFECHDETDEP"]);
-          //$HDETDEP = '';
-           if(isset($row["CONTFECHDETDEP"]) || $row["CONTFECHDETDEP"]==null){
+            if(!isset($row["CONTFECHADQ"])){
+                $FECHADQ=null;
+            }else{
+                $FECHADQ=$row["CONTFECHADQ"];
+            }
+
+
+            if(!isset($row["CONTFECHDETDEP"])){
                 $HDETDEP=null;
-           }else{
-                $HDETDEP=$row["CONTFECHDETDEP"]; 
-           }
-           /* */
-            $inf[$i]= $fila = array('cuenta' =>$row['CUENTA'],
-                                    'centro' =>$row['CENTRO_TRABAJO'],
-                                    'cedula' =>$row['CEDULA'],
-                                    'ccosto' =>$row['CONTCC'],
-                                    'contsc' =>$row['CONTSC'],
+            }else{
+                $HDETDEP=$row["CONTFECHDETDEP"];
+            }
+
+            if(!isset($row['CONTFECHBAJA'])){
+                $FECHBAJ=null;
+            }else{
+                $FECHBAJ=$row['CONTFECHBAJA'];
+            }
+            $inf[$i]= $fila = array('ccuenta' =>$row['CUENTA'],
+                                    'ccentro' =>$row['CENTRO_TRABAJO'],
+                                    'ccedula' =>$row['CEDULA'],
+                                    'numacti'=>$row['NUMACTIVO'],
+                                    'cccosto' =>$row['CONTCC'],
+                                    'ccontsc' =>$row['CONTSC'],
                                     'contssc'=>$row['CONTSSC'],
                                     'cntsssc'=>$row['CONTSSSC'],
                                     'contdes'=>$row['CONTDES'],
-                                    'fechadq'=>$row['CONTFECHADQ'],
+                                    'FECHADQ'=>$FECHADQ,
                                     'factuer'=>$row['CONTFACTURA'],
                                     'cncosto'=>$row['CONTCOSTO'],
                                     'rigbien'=>$row['CONTORIGBIEN'],
@@ -105,23 +143,25 @@ class Cedulas extends ClaseTesteo{
                                     'BAJADEP'=>$row['CONTBAJADEP'],
                                     'TMESDEP'=>$row['CONTMESDEP'],
                                     'HDETDEP'=>$HDETDEP,
-                                    
-
+                                    'FECHBAJ'=>$FECHBAJ
                                 );
-                               
+                               /**/
         }
         oci_free_statement($stmt);
         oci_close($co);
 
+        
         //echo json_encode($inf);
-        //
+        return $inf; 
         //$this->hojaExecel($inf); 
     }
 
-    public function hojaExecel(){
-        ///
 
+    public function metodoAccesoCedula(){
+        $this->getconexionremota(); 
+    }
 
+    public function hojaExecel(){ //
 
     }
     
@@ -131,6 +171,6 @@ class Cedulas extends ClaseTesteo{
 }
 
 $ob = new Cedulas();
-$ob->getconexionremota();  
+$ob->metodoAccesoCedula(); 
 $ob->cerrarConexion2(); 
 ?>
