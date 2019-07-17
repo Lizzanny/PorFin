@@ -33,7 +33,7 @@ class Cedulas extends ClaseTesteo{
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
         CEDULAS.CONTNUM CEDULA,
-        GetNumActivoxCed(CEDULAS.CONTCT,CEDULAS.CONTNUM),
+        NVL(GetNumActivoxCed(CEDULAS.CONTCT,CEDULAS.CONTNUM),'----') AS NUMACTIVO,
         CEDULAS.CONTCC,
         CEDULAS.CONTSC,
         CEDULAS.CONTSSC,
@@ -42,13 +42,13 @@ class Cedulas extends ClaseTesteo{
         CEDULAS.CONTFECHADQ,
         CEDULAS.CONTFACTURA,
         CEDULAS.CONTCOSTO,
-        CEDULAS.CONTORIGBIEN ,
+        NVL(CEDULAS.CONTORIGBIEN, '----') AS CONTORIGBIEN,
         CEDULAS.CONTASADEP,
         CEDULAS.CONTFECHCAP,
         CEDULAS.CONTFECHDEP,
-        CEDULAS.CONTPOLIZA,
-        CEDULAS.CONTREFALTAS,
-        CEDULAS.CONTREFBAJAS,
+        NVL(CEDULAS.CONTPOLIZA, '----') AS CONTPOLIZA,
+        NVL(CEDULAS.CONTREFALTAS, '----') AS CONTREFALTAS,
+        NVL(CEDULAS.CONTREFBAJAS, '----') AS CONTREFBAJAS,
         CEDULAS.CONTABONO,
         CEDULAS.CONTFECHMOV,
         CEDULAS.CONTDEPMEN,
@@ -67,6 +67,17 @@ class Cedulas extends ClaseTesteo{
         oci_execute($stmt);
 
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
+           //if($row["CONTFECHDETDEP"]==null){
+           //    echo "CONTFECHDETDEP esta indefinido <br>"; 
+           //}
+           //var_dump($row["CONTFECHDETDEP"]);
+          //$HDETDEP = '';
+           if(isset($row["CONTFECHDETDEP"]) || $row["CONTFECHDETDEP"]==null){
+                $HDETDEP=null;
+           }else{
+                $HDETDEP=$row["CONTFECHDETDEP"]; 
+           }
+           /* */
             $inf[$i]= $fila = array('cuenta' =>$row['CUENTA'],
                                     'centro' =>$row['CENTRO_TRABAJO'],
                                     'cedula' =>$row['CEDULA'],
@@ -78,13 +89,31 @@ class Cedulas extends ClaseTesteo{
                                     'fechadq'=>$row['CONTFECHADQ'],
                                     'factuer'=>$row['CONTFACTURA'],
                                     'cncosto'=>$row['CONTCOSTO'],
-                                    'conrigb'=>$row['CONTORIGBIEN']
+                                    'rigbien'=>$row['CONTORIGBIEN'],
+                                    'TASADEP'=>$row['CONTASADEP'],
+                                    'FECHCAP'=>$row['CONTFECHCAP'],
+                                    'FECHDEP'=>$row['CONTFECHDEP'],
+                                    'TPOLIZA'=>$row['CONTPOLIZA'],
+                                    'REFALTA'=>$row['CONTREFALTAS'],
+                                    'REFBAJA'=>$row['CONTREFBAJAS'],
+                                    'NTABONO'=>$row['CONTABONO'],
+                                    'FECHMOV'=>$row['CONTFECHMOV'],
+                                    'TDEPMEN'=>$row['CONTDEPMEN'],
+                                    'DEPANUA'=>$row['CONTDEPANUAL'],
+                                    'DEPACUM'=>$row['CONTDEPACUM'],
+                                    'SALXDEP'=>$row['CONTSALXDEP'],
+                                    'BAJADEP'=>$row['CONTBAJADEP'],
+                                    'TMESDEP'=>$row['CONTMESDEP'],
+                                    'HDETDEP'=>$HDETDEP,
+                                    
+
                                 );
+                               
         }
         oci_free_statement($stmt);
         oci_close($co);
 
-        echo json_encode($inf);
+        //echo json_encode($inf);
         //
         //$this->hojaExecel($inf); 
     }

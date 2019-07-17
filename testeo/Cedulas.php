@@ -33,23 +33,23 @@ class Cedulas extends ClaseTesteo{
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
         CEDULAS.CONTNUM CEDULA,
-        GetNumActivoxCed(CEDULAS.CONTCT,CEDULAS.CONTNUM),
+        NVL((GetNumActivoxCed(CEDULAS.CONTCT,CEDULAS.CONTNUM)),'----') AS NUMACT,
         CEDULAS.CONTCC,
         CEDULAS.CONTSC,
         CEDULAS.CONTSSC,
         CEDULAS.CONTSSSC,
-        CEDULAS.CONTDES,
-        CEDULAS.CONTFECHADQ,
+        NVL(CEDULAS.CONTDES,'----') AS CONTDES,
+        NVL(CEDULAS.CONTFECHADQ,'----') AS CONTFECHADQ,
         CEDULAS.CONTFACTURA,
         CEDULAS.CONTCOSTO,
         CEDULAS.CONTORIGBIEN ,
         CEDULAS.CONTASADEP,
         CEDULAS.CONTFECHCAP,
         CEDULAS.CONTFECHDEP,
-        CEDULAS.CONTPOLIZA,
-        CEDULAS.CONTREFALTAS,
-        CEDULAS.CONTREFBAJAS,
-        CEDULAS.CONTABONO,
+        NVL(CEDULAS.CONTPOLIZA, '----') AS CONTPOLIZA,
+        NVL(CEDULAS.CONTREFALTAS, '----') AS CONTREFALTAS,
+        NVL(CEDULAS.CONTREFBAJAS, '----') AS CONTREFBAJAS,
+        NVL(CEDULAS.CONTABONO,'----') AS CONTABONO,
         CEDULAS.CONTFECHMOV,
         CEDULAS.CONTDEPMEN,
         CEDULAS.CONTDEPANUAL,
@@ -57,7 +57,7 @@ class Cedulas extends ClaseTesteo{
         CEDULAS.CONTSALXDEP,
         CEDULAS.CONTBAJADEP,
         CEDULAS.CONTMESDEP,
-        CEDULAS.CONTFECHDETDEP,
+        NVL(CEDULAS.CONTFECHDETDEP,'----') AS CONTFECHDETDEP,
         CEDULAS.CONTFECHBAJA
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
@@ -67,36 +67,47 @@ class Cedulas extends ClaseTesteo{
         oci_execute($stmt);
 
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-            $inf[$i]= $fila = array('cuenta' =>$row['CUENTA'],
-                                    'centro' =>$row['CENTRO_TRABAJO'],
-                                    'cedula' =>$row['CEDULA'],
-                                    'ccosto' =>$row['CONTCC'],
-                                    'contsc' =>$row['CONTSC'],
-                                    'contssc'=>$row['CONTSSC'],
-                                    'cntsssc'=>$row['CONTSSSC'],
-                                    'contdes'=>$row['CONTDES'],
-                                    'fechadq'=>$row['CONTFECHADQ'],
-                                    'factuer'=>$row['CONTFACTURA'],
-                                    'cncosto'=>$row['CONTCOSTO'],
-                                    'conrigb'=>$row['CONTORIGBIEN']
-                                );
+
+            $inf[$i] = $fila = array('cuenta' => $row['CUENTA'],
+                                     'centro' => $row['CENTRO_TRABAJO'],
+                                     'cedula' => $row['CEDULA'],
+                                     'numact' => $row['NUMACT'],
+                                     'contcc' => $row['CONTCC'],
+                                     'contsc' => $row['CONTSC'],
+                                     'contssc' => $row['CONTSSC'],
+                                     'contsssc' => $row['CONTSSSC'],
+                                     'contdes' => $row['CONTDES'],
+                                     'contfechadq' => $row['CONTFECHADQ'],
+                                     'contfactura' => $row['CONTFACTURA'],
+                                     'contcosto' => $row['CONTCOSTO'],
+                                     'contorigbien' => $row['CONTORIGBIEN'],
+                                     'contasadep' => $row['CONTASADEP'],
+                                     'contfechcap' => $row['CONTFECHCAP'],
+                                     'contfechdep' => $row['CONTFECHDEP'],
+                                     'contpoliza' => $row['CONTPOLIZA'],
+                                     'contrefaltas' => $row['CONTREFALTAS'],
+                                     'contrefbajas' => $row['CONTREFBAJAS'],
+                                     'contabono' => $row['CONTABONO'],
+                                     'contfechmov' => $row['CONTFECHMOV'],
+                                     'contdepmen' => $row['CONTDEPMEN'],
+                                     'contdepanual' => $row['CONTDEPANUAL'],
+                                     'contdepacum' => $row['CONTDEPACUM'],
+                                     'contsalxdep' => $row['CONTSALXDEP'],
+                                     'contbajadep' => $row['CONTBAJADEP'],
+                                     'contmesdep' => $row['CONTMESDEP'],
+                                     'contfechdetdep' => $row['CONTFECHDETDEP'],
+                                     'contfechbaja' => $row['CONTFECHBAJA']);
+
         }
         oci_free_statement($stmt);
         oci_close($co);
 
         echo json_encode($inf);
-        //
-        //$this->hojaExecel($inf); 
     }
 
     public function hojaExecel(){
-        ///
-
-
 
     }
-    
-
 
 
 }

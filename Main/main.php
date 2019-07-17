@@ -81,7 +81,7 @@
                         <li><a href="../repof/rgpct.php">Reporte de gastos por partida y centro de trabajo</a></li>
                         <li><a href="../repof/rtpd.php">Reporte por tipo de gasto y división</a></li>
                         <li><a href="../repof/rgppct.php">Reporte de gastos por partida y centro de trabajo(Hacienda)</a></li>
-                        <li><a href="../SICOPLOCAL/Flujo/flujoprincipal.php">Reporte de flujo de efectivo</a></li>
+                        <li><a href="../Flujo/flujoprincipal.php">Reporte de flujo de efectivo</a></li>
                     </ul>
                 </li>
 <?php }
