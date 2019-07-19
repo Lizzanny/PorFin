@@ -10,21 +10,25 @@ include_once '../Libs/ConexionOracle.php';
 include_once 'teste.php';
 //excel 
 class Cedulas extends ClaseTesteo{
+    public $tama = 0;
 
-  
     public function getconexionremota(){
-
-        //echo $this->cnx[0]['host']; 
-        $co = oci_connect($this->cnx[0]['user'], $this->cnx[0]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[0]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[0]['base'].")))");
+$this->tama = sizeof($this->cnx);
+        for($i = 0; $i < $this->tama; $i++){
+            $co[$i] = oci_connect($this->cnx[$i]['user'], $this->cnx[$i]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[$i]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[$i]['base'].")))");
             // Seleccion de la base de datos 
             if(!$co){
                 $error = oci_error();
                 trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
                //echo 'u.u   xdxxx';
+               echo $i.'0 <br>';
             }else{
-                $this->getInformacionCedulas($co); 
+              //  $this->getInformacionCedulas($co); 
                //echo "conexion exitosa de php a oracle <br> xxsss";
+               echo $i.'1 <br>';
             }
+        }
+        
     }
 
     public function getInformacionCedulas($co){
@@ -72,7 +76,7 @@ class Cedulas extends ClaseTesteo{
            //}
            //var_dump($row["CONTFECHDETDEP"]);
           //$HDETDEP = '';
-           if(isset($row["CONTFECHDETDEP"]) || $row["CONTFECHDETDEP"]==null){
+           if(!isset($row["CONTFECHDETDEP"])){
                 $HDETDEP=null;
            }else{
                 $HDETDEP=$row["CONTFECHDETDEP"]; 
@@ -113,7 +117,7 @@ class Cedulas extends ClaseTesteo{
         oci_free_statement($stmt);
         oci_close($co);
 
-        //echo json_encode($inf);
+      //-  echo json_encode($inf);
         //
         //$this->hojaExecel($inf); 
     }
