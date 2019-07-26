@@ -36,7 +36,10 @@ class ClaseTesteo extends ConexionOracle
             $nomb= trim($row["DB_INSTANCE"]);
             $dblink= trim($row["DB_NAME"]);
             
-                $conex=$this->ProbarConexionBaseRemota($host,$base,$user,$pass);
+              $conex=1;//$this->ProbarConexionBaseRemota($host,$base,$user,$pass);
+                if($nomb=="Chihuahua"){
+                  $conex=0; 
+                } 
                 $this->cnx[$i]= $valor =  array('clve' => $row['CT_CLAVE'],
                                                  'nomb' => $row['DB_INSTANCE'],
                                                  'host' => $row['IP'],
@@ -44,9 +47,8 @@ class ClaseTesteo extends ConexionOracle
                                                  'user' => $row['USUARIO'],
                                                  'pass' => $row['CLAVE'],
                                                  'cone' => $conex
-                                                );  
+                                               );  
         }
-        //$this->loteprimer(); 
     }
 
 
@@ -55,8 +57,9 @@ class ClaseTesteo extends ConexionOracle
     {
         $checar=0; 
         try{    
-            $base= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
+            $conexion= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
             $checar=1;
+            $conexion = null;
         }catch(PDOException $e){
              //echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
              $checar=0;
@@ -68,8 +71,7 @@ class ClaseTesteo extends ConexionOracle
 
     //metodo publico de acceso para llamar a metodo privados
     public function getMetodoAcceso(){
-        $this->getDatosConexionesRemotas(); 
-       
+        $this->getDatosConexionesRemotas();
         //echo json_encode($this->cnx); 
     }
 
