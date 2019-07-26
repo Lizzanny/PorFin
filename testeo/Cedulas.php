@@ -10,10 +10,8 @@ include_once '../Libs/ConexionOracle.php';
 include_once 'teste.php';
 //excel 
 class Cedulas extends ClaseTesteo{
-
   
     public function getconexionremota(){
-
         //echo $this->cnx[0]['host']; 
         $co = oci_connect($this->cnx[0]['user'], $this->cnx[0]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[0]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[0]['base'].")))");
             // Seleccion de la base de datos 
@@ -26,7 +24,6 @@ class Cedulas extends ClaseTesteo{
                //echo "conexion exitosa de php a oracle <br> xxsss";
             }
     }
-
     public function getInformacionCedulas($co){
         $inf=array(); 
         $sql="SELECT
@@ -57,17 +54,14 @@ class Cedulas extends ClaseTesteo{
         CEDULAS.CONTSALXDEP,
         CEDULAS.CONTBAJADEP,
         CEDULAS.CONTMESDEP,
-        NVL(CEDULAS.CONTFECHDETDEP,'-01/01/4712') AS CONTFECHDETDEP,
+        NVL(CEDULAS.CONTFECHDETDEP,'----') AS CONTFECHDETDEP,
         CEDULAS.CONTFECHBAJA
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
         ORDER BY 2,3"; 
-
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);
-
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-
             $inf[$i] = $fila = array('cuenta' => $row['CUENTA'],
                                      'centro' => $row['CENTRO_TRABAJO'],
                                      'cedula' => $row['CEDULA'],
@@ -97,21 +91,14 @@ class Cedulas extends ClaseTesteo{
                                      'contmesdep' => $row['CONTMESDEP'],
                                      'contfechdetdep' => $row['CONTFECHDETDEP'],
                                      'contfechbaja' => $row['CONTFECHBAJA']);
-
         }
         oci_free_statement($stmt);
         oci_close($co);
-
         echo json_encode($inf);
     }
-
     public function hojaExecel(){
-
     }
-
-
 }
-
 $ob = new Cedulas();
 $ob->getconexionremota();  
 $ob->cerrarConexion2(); 
