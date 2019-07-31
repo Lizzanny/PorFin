@@ -29,13 +29,18 @@ class Cedulas extends ClaseTesteo{
         $tamct4=0; $tamct10=0; $tamct16=0;  $tamct22=0; $tamct28=0; $tamct34=0;
         $tamct5=0; $tamct11=0; $tamct17=0;  $tamct23=0; $tamct29=0;
         
-        for($i=0; $i<=4; $i++){
+        $procesarct=8; 
+        for($i=0; $i<=$procesarct; $i++){
             if($this->cnx[$i]['cone']!=0){
                 $co = oci_connect($this->cnx[$i]['user'], $this->cnx[$i]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[$i]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[$i]['base'].")))");
                 if(!$co){
                     $error = oci_error();
+                    //echo "Fallo el centro de trabajo: ".$fallact."<br>";
+                    //$fallact++;
                     trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
+                    
                 }else{
+                    //$fallact++;
                     if($i==0){
                         $ct0=$this->getInformacionCedulas($co); //Baja California Sur
                         $tamct0=sizeof($ct0);
@@ -187,11 +192,10 @@ class Cedulas extends ClaseTesteo{
             $inf=array($ct0,$ct1,$ct2,$ct3,$ct4,$ct5,$ct6,$ct7,$ct8,$ct9,$ct10,$ct11,$ct12,$ct13,$ct14,$ct15,$ct16,$ct17,$ct18,$ct19,$ct20,$ct22,$ct23,$ct24,$ct25,$ct26,$ct27,$ct28,$ct29,$ct30,$ct31,$ct32,$ct33,$ct34); 
 
         $conta=0; 
-        for ($i=0; $i <=4; $i++)//centro trabajo 
+        for ($i=0; $i<=$procesarct; $i++)//centro trabajo 
         {   
             //eliminar de memoria ram el registro para liberar memoria 
             //memory_get_peak_usage();
-
             for ($j=0; $j <$tam[$i] ; $j++) //numero de registros por centro de trabajo
             { 
                 $conta++; 
@@ -228,8 +232,10 @@ class Cedulas extends ClaseTesteo{
                                         $inf[$i][$j]['HDETDEP'],
                                         $inf[$i][$j]['FECHBAJ']
                                     ); 
-            } 
-        }
+
+            }//for numero de registros
+              //unset($inf); //eliminamos la fila para evitar sobrecargar la memoria
+        }//for centro de trabajo
             
         //echo "tota de registros: " .$sumatam=array_sum($tam); //sumar el total de registros de cada centro de trabajo
         $numregistros=array_sum($tam); //sumar el total de registros de cada centro de trabajo
@@ -256,7 +262,7 @@ class Cedulas extends ClaseTesteo{
 
 
     private function getInformacionCedulas($co){
-        $inf=array();  
+        $inf=array();  //array auxiliar para guardar los movimientos
 
     $sql="SELECT 
         CUENTAS.CCDES CUENTA,
@@ -293,9 +299,9 @@ class Cedulas extends ClaseTesteo{
         ORDER BY 2,3"; 
 
         $stmt = oci_parse($co, $sql);
-        oci_execute($stmt);
+        oci_execute($stmt);//Se ejecuta directo la consulta, ya que no hay parámetros
 
-        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
+        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){//recomerremos una a una las filas obtenidas
             if(!isset($row["CONTFECHADQ"])){
                 $FECHADQ=null;
             }else{
@@ -313,14 +319,14 @@ class Cedulas extends ClaseTesteo{
                 $FECHBAJ=null;
             }else{
                 $FECHBAJ=$row['CONTFECHBAJA'];
-            }
-
-            $inf[$i]= $fila = array('ccuenta' =>$row['CUENTA'],
-                                    'ccentro' =>$row['CENTRO_TRABAJO'],
-                                    'ccedula' =>$row['CEDULA'],
+            }   
+            //guardamos el elemento en el array auxiliar
+            $inf[$i]= $fila = array('ccuenta'=>$row['CUENTA'],
+                                    'ccentro'=>$row['CENTRO_TRABAJO'],
+                                    'ccedula'=>$row['CEDULA'],
                                     'numacti'=>$row['NUMACTIVO'],
-                                    'cccosto' =>$row['CONTCC'],
-                                    'ccontsc' =>$row['CONTSC'],
+                                    'cccosto'=>$row['CONTCC'],
+                                    'ccontsc'=>$row['CONTSC'],
                                     'contssc'=>$row['CONTSSC'],
                                     'cntsssc'=>$row['CONTSSSC'],
                                     'contdes'=>$row['CONTDES'],
@@ -346,6 +352,7 @@ class Cedulas extends ClaseTesteo{
                                     'FECHBAJ'=>$FECHBAJ
                                 );
                                /**/
+                            unset($row); //eliminamos la fila para evitar sobrecargar la memoria
         }
         oci_free_statement($stmt);
         oci_close($co);
@@ -392,6 +399,7 @@ class Cedulas extends ClaseTesteo{
 
 
     public function metodoAccesoCedula(){
+        //set_time_limit(0);
         $this->getconexionremota(); 
     }
 

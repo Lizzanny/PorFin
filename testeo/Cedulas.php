@@ -13,7 +13,6 @@ class Cedulas extends ClaseTesteo{
 
   
     public function getconexionremota(){
-
         //echo $this->cnx[0]['host']; 
         $co = oci_connect($this->cnx[0]['user'], $this->cnx[0]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[0]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[0]['base'].")))");
             // Seleccion de la base de datos 
@@ -23,6 +22,7 @@ class Cedulas extends ClaseTesteo{
                //echo 'u.u   xdxxx';
             }else{
                 $this->getInformacionCedulas($co); 
+                $co = null;
                //echo "conexion exitosa de php a oracle <br> xxsss";
             }
     }
