@@ -21,6 +21,7 @@ class Cedulas extends ClaseTesteo{
                //echo 'u.u   xdxxx';
             }else{
                 $this->getInformacionCedulas($co); 
+                $co = null;
                //echo "conexion exitosa de php a oracle <br> xxsss";
             }
     }
