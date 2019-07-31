@@ -13,6 +13,13 @@
     <!--dataTables-->
     <link rel="stylesheet" href="../Libs/css/tablestyle.css">
 
+    <link rel="icon" type="image/png" href="../Libs/image/ICON.png" />
+
+
+	<!-- Font Awesome JS -->
+    <script defer src="../Libs/fontAwesome/js/solid.js" ></script>
+    <script defer src="https://kit.fontawesome.com/b9fc8f6309.js"></script>
+
 </head>
 
 <body>
@@ -30,36 +37,36 @@
 					<table id="tablainformacion" class="table table-bordered table-hover table-danger" cellspacing="0" width="100%">
 						<thead class="thead-light">
 							<tr>
-								<th>ccuenta</th>
-								<th>ccentro</th>
-								<th>ccedula</th>
-								<th>numacti</th>
-								<th>cccosto</th>
-								<th>ccontsc</th>
-								<th>contssc</th>
-								<th>cntsssc</th>
-								<th>contdes</th>
-								<th>FECHADQ</th>
-								<th>factuer</th>
-								<th>cncosto</th>
-								<th>rigbien</th>
-								<th>TASADEP</th>
-								<th>FECHCAP</th>
-								<th>FECHDEP</th>
-								<th>TPOLIZA</th>
-								<th>REFALTA</th>
-								<th>REFBAJA</th>
-								<th>NTABONO</th>
-								<th>FECHMOV</th>
-								<th>TDEPMEN</th>
-								<th>DEPANUA</th>
-								<th>DEPACUM</th>
-								<th>SALXDEP</th>
-								<th>BAJADEP</th>
-								<th>TMESDEP</th>
-								<th>HDETDEP</th>
-								<th>FECHBAJ</th>
-							</tr>
+								<th>CUENTA</th>
+								<th>CENTRO_TRABAJO</th>
+								<th>CEDULA</th>
+								<th>NUMACTIVO</th>
+								<th>CONTCC</th>
+								<th>CONTSC</th>
+								<th>CONTSSC</th>
+								<th>CONTSSSC</th>
+								<th>CONTDES</th>
+								<th>CONTFECHADQ</th>
+								<th>CONTFACTURA</th>
+								<th>CONTCOSTO</th>
+								<th>CONTORIGBIEN</th>
+								<th>CONTASADEP</th>
+								<th>CONTFECHCAP</th>
+								<th>CONTFECHDEP</th>
+								<th>CONTPOLIZA</th>
+								<th>CONTREFALTAS</th>
+								<th>CONTREFBAJAS</th>
+								<th>CONTABONO</th>
+								<th>CONTFECHMOV</th>
+								<th>CONTDEPMEN</th>
+								<th>CONTDEPANUAL</th>
+								<th>CONTDEPACUM</th>
+								<th>CONTSALXDEP</th>
+								<th>CONTBAJADEP</th>
+								<th>CONTMESDEP</th>
+								<th>CONTFECHDETDEP</th>
+								<th>CONTFECHBAJA</th>
+								</tr>
 						</thead>
 					</table>
 				</div>
@@ -89,13 +96,13 @@ $(document).ready(function() {
 			"buttons":[
 					{
 						extend: 'csv', 
-						"text":'<i class="fa fa-file-text-o fa-2x"></i>',
+						"text":'<i class="fas fa-file-csv"></i>',
 						"titleAttr": "CSV",
 						"className": "btn btn-primary",
 
 					},{
 						extend: 'excel', 
-						"text": '<i class="fa fa-file-excel-o aria-hidden=true fa-2x"></i>',
+						"text": '<i class="far fa-file-excel"></i>',
 						"titleAttr": "Excel",
 						"className": "btn btn-success",
 

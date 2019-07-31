@@ -9,6 +9,8 @@
 include_once '../Libs/ConexionOracle.php'; 
 include_once 'teste.php';
 //excel 
+
+
 class Cedulas extends ClaseTesteo{
   
     private function getconexionremota(){
@@ -26,7 +28,7 @@ class Cedulas extends ClaseTesteo{
         $tamct4=0; $tamct10=0; $tamct16=0;  $tamct22=0; $tamct28=0; $tamct34=0;
         $tamct5=0; $tamct11=0; $tamct17=0;  $tamct23=0; $tamct29=0;
         
-        for($i=0; $i<=4; $i++){
+        for($i=0; $i<=10; $i++){
             if($this->cnx[$i]['cone']!=0){
                 $co = oci_connect($this->cnx[$i]['user'], $this->cnx[$i]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[$i]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[$i]['base'].")))");
                 if(!$co){
@@ -181,7 +183,7 @@ class Cedulas extends ClaseTesteo{
             );
             $inf=array($ct0,$ct1,$ct2,$ct3,$ct4,$ct5,$ct6,$ct7,$ct8,$ct9,$ct10,$ct11,$ct12,$ct13,$ct14,$ct15,$ct16,$ct17,$ct18,$ct19,$ct20,$ct22,$ct23,$ct24,$ct25,$ct26,$ct27,$ct28,$ct29,$ct30,$ct31,$ct32,$ct33,$ct34); 
         $conta=0; 
-        for ($i=0; $i <=4; $i++)//centro trabajo 
+        for ($i=0; $i <=10; $i++)//centro trabajo 
         {   
             //eliminar de memoria ram el registro para liberar memoria 
             //memory_get_peak_usage();
@@ -231,6 +233,8 @@ class Cedulas extends ClaseTesteo{
         //
         //echo json_encode($datacompleto); //imprimir los datos datacompleto
         //
+        //AQUI DEBE IR LO DE LA BUSQUEDA, NUMERO DE REGISTROS Y PAGINACION
+        
         $this->mandarInformacionServidor($numregistros,$datacompleto);
         unset($numregistros);//nos permite eliminar variables en PHP
         unset($datacompleto);//nos permite eliminar variables en PHP
@@ -329,6 +333,7 @@ class Cedulas extends ClaseTesteo{
                                /**/
         }
         oci_free_statement($stmt);
+        
         oci_close($co);
         //echo json_encode($inf);
         return $inf; 
