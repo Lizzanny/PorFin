@@ -1,21 +1,23 @@
 $(document).on("ready", function(){
 	listar();
+	$("#Aviso").modal();
 });
 
+var arregloxd = new Array();
+var contador = 0;
 
 var listar = function(){
 	var table = $('#usuarios').DataTable( {
 		"ajax":{
 			"method":"POST",
-			"url": "listarDisp.php",
+			"url": "listarDisp.php"
 		},
 		"columns":[
+			{"data":"num"},
 			{"data":"clve"},
 			{"data":"nomb"},
       		{"data":"cone"},
-			{"defaultContent": "<button type='button' class='expandir btn btn btn-info btn-sm'><i class='fas fa-expand-arrows-alt fa-sm'></i></button>&nbsp;"
-								
-			}
+			{"data":"chec"}
 		],
 		"language": idioma_espanol,
 		"dom": 
@@ -24,65 +26,50 @@ var listar = function(){
 		"<'row'<'col-sm-12'tr>>" +
 		"<'row'<'col-sm-12 col-md-12'i><'col-sm-12 col-md-12'p>>",
 		"buttons":[
-			
+			{
+				text: "<i class='fas fa-file-export'></i>",
+				titleAttr: "Exportar",
+				className: "btn btn-dark",
+				action: function() {
+            		console.log(arregloxd);
+        		}
+			}
 		]
 	});
-	obtener_data_expandir("#usuarios tbody", table);
-	obtener_data_editar("#usuarios tbody", table);
-	obtener_id_eliminar("#usuarios tbody", table);
+	obtener_data_checarCon("#usuarios tbody", table);
 	
 }
 
-var obtener_data_expandir = function(tbody, table){
-	$(tbody).on("click", "button.expandir", function(){
+var obtener_data_checarCon = function(tbody, table){
+	$(tbody).on("click", "button.checarCon", function(){
 		var data = table.row( $(this).parents("tr") ).data();
-		
-		//location.href='../deta_conexion/index.php?idx='+data.Id_usr+'';
+		var idsemaforo = '#images'+data.clve;
+		var botonesxdp = '#checkin'+data.clve;
+		$.ajax({
+		url: 'php/funciones.php',
+		type: 'POST',
+		dataType: 'html',
+		data: {
+				'opcion': 'checarConexion',
+				'clave': data.clve
+		      },
+		}).done(function(res) {
+			  if(res==1){
+			  	$(botonesxdp).attr('disabled','disabled');
+			  	$(idsemaforo).attr("src","../Libs/image/verde.png");
+			  	alertify.success('La base de datos esta disponible');
+			  	almacena(data.clve);
+			  }else{
+			  	alertify.error('La base de datos NO esta disponible');
+			  	$(botonesxdp).attr('disabled', 'disabled');
+			  	$(idsemaforo).attr("src","../Libs/image/rojo.png");
+			  }
+		}).fail(function() {
+			    console.log("error");
+		}) 
 	});
 }
 
-var obtener_data_editar = function(tbody, table){//a nivel registro obtengo algunos valores para poder realizar en este caso la edicion. y lo mando a updateuser.php la clave
-	$(tbody).on("click", "button.editar", function(){
-		var data = table.row( $(this).parents("tr") ).data();
-		returnCT(data.ctxcco);
-		returnCCos(data.ctxcco, data.cvecco);
-		$('#Enumeronna').val(data.rhnnna);
-		$('#Enombreusr').val(data.usrnom);
-		$('#Eusuarious').val(data.usuari);
-		$('#Econtrasen').val(data.usrpas);
-		$('#Eclaverolx').val(data.rolnam);
-	});
-}
-
-var obtener_id_eliminar = function(tbody, table){
-	$(tbody).on("click", "button.eliminar", function(){
-		var data = table.row( $(this).parents("tr") ).data();
-		alertify.confirm("Se trata de un diálogo de confirmación",
-            function (e) {
-			    if (e) {
-				   $.ajax({
-						url: 'php/funciones.php',
-						type: 'POST',
-						dataType: 'html',
-						data: {'opcion': 'inhabilite',
-							   'usuari': data.usuari},
-					}).done(function(res) {
-						  if(res.opc == 1){
-						  	alertify.success(res.msj);
-						  }else{
-						  	alertify.error(res.msj);
-						  }
-						  $('#usuario').DataTable().ajax.reload();
-					}).fail(function() {
-						    console.log("error");
-					}) 
-			    } else {
-				    alertify.error("Acción cancelada");
-			    }
-		});
-	});
-	
-}
 
 var idioma_espanol = {
 	"decimal":        "",
@@ -109,5 +96,14 @@ var idioma_espanol = {
 	}
 }
 
+
+function almacena(clave){
+	console.log(clave);
+	arregloxd[contador]=clave;
+	
+	//console.log(arregloxd[contador]);
+	contador++;
+//console.log(arregloxd);
+}
 
 		

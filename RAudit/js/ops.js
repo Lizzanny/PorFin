@@ -1,258 +1,85 @@
-function getCT(){
-	$.ajax({
-		url: 'php/funciones.php',
-		type: 'POST',
-		dataType: 'html',
-		data: {'opcion': 'getCT'
-		      },
-	}).done(function(res) {
-		  $('#ccoctcve').html(res);
-	}).fail(function() {
-		    console.log("error");
-	}) 
+function riloud(estatus, clave){
+ // console.log('hola que hace');
+  var table2 = $('#usuarios').DataTable( {
+    "ajax":{
+      "method":"POST",
+      "url": "listarDispRel.php",
+      "data":{
+            'stt':estatus,
+            'cve':clave
+      }
+    },
+    "columns":[
+      {"data":"num"},
+      {"data":"clve"},
+      {"data":"nomb"},
+      {"data":"cone"},
+      {"data":"chec"}
+    ],
+    "language": idioma_espanol,
+    "dom": 
+    "<'row'<'offset-sm-12 offset-md-12'B>>" +
+    "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-12'f>>" +
+    "<'row'<'col-sm-12'tr>>" +
+    "<'row'<'col-sm-12 col-md-12'i><'col-sm-12 col-md-12'p>>",
+    "buttons":[
+      
+    ]
+  });
+  obtener_data_checarCon("#usuarios tbody", table2);
+
+  $("#usuarios").dataTable().fnReloadAjax();
 }
-
-
-$('#ccoctcve').change(function (){
-  var clave = $("#ccoctcve").val();
-
-  $.ajax({
-    url: 'php/funciones.php',
-    type: 'POST',
-    dataType: "html",
-    data: {
-      "opcion": 'getCC',
-      "cvecct": clave
-    }
-
-  }).done(function(res) {
-  	 $('#cvecencos').html(res);
-  }).fail(function() {
-    console.log("error");
-  })
-});
-
-$('#numeronna').change(function (){
-	var cvect = $("#ccoctcve").val();
-  	var clave = $("#numeronna").val();
-  	console.log(cvect);
-  	console.log(clave);
-
-  	$.ajax({
-    url: 'php/funciones.php',
-    type: 'POST',
-    dataType: "html",
-    data: {
-      "opcion": 'getName',
-      "rhctno": cvect,
-      "nomina": clave
-    }
-
-  }).done(function(res) {
-  	 $('#nombreusr').val(res);
-  	 console.log(res);
-  }).fail(function() {
-    console.log("error");
-  })
-});
-
-$( "#guardaUsuario" ).click(function() {
-	var ccoct = $('#ccoctcve').val();
-	var cvecc = $('#cvecencos').val();
-	var nunna = $('#numeronna').val();
-	var nomus = $('#nombreusr').val();
-	var usuar = $('#usuarious').val();
-	var passw = $('#contrasen').val();
-	var cvero = $('#claverolx').val();
-
-	if(ccoct == ''){
-		$('#ccoctcve').focus();
-	}else if(cvecc == ''){
-		$('#cvecencos').focus();
-	}else if(nunna == ''){
-		$('#numeronna').focus();
-	}else if(usuar == ''){
-		$('#usuarious').focus();
-	}else if(passw == ''){
-		$('#contrasen').focus();
-	}else if(cvero == ''){
-		$('#claverolx').focus();
-	}else{
-    //console.log('todo bien');
-		$.ajax({
-    		url: 'php/funciones.php',
-    		type: 'POST',
-    		dataType: "json",
-    		data: {
-     		 	"opcion": 'saveUser',
-     		 	"ccoctx" : ccoct,
-				  "cveccx" : cvecc,
-				  "nunnax" : nunna,
-				  "nomusx" : nomus,
-				  "usuarx" : usuar,
-				  "passwx" : passw,
-				  "cverox" : cvero
-    		}
-  		}).done(function(res) {
-  	 		if (res.opc == 1) {
-  	 			alertify.success(res.msj);
-          limpia();
-        $('#usuario').DataTable().ajax.reload();
-  	 		}else if(res.opc == 2){
-  	 			alertify.error(res.msj);
-          limpia();
-        $('#usuario').DataTable().ajax.reload();
-  	 		}else{
-  	 			alertify.warning(res.msj);
-          limpia();
-        $('#usuario').DataTable().ajax.reload();
-  	 		}
-        
-  		}).fail(function() {
-    		console.log("error");
-  		})
-	}
-});
-
-function limpia(){
-  $('#ccoctcve').val('');
-  $('#cvecencos').val('');
-  $('#numeronna').val('');
-  $('#nombreusr').val('');
-  $('#usuarious').val('');
-  $('#contrasen').val('');
-  $('#claverolx').val('');
-}
-
- $('#Econtrasen').attr('type', 'password');
-
-function returnCT(cvect){
-  $.ajax({
+var obtener_data_checarCon = function(tbody, table2){
+  $(tbody).on("click", "button.checarCon", function(){
+    var data = table2.row( $(this).parents("tr") ).data();
+    console.log(data.clve);
+    $.ajax({
     url: 'php/funciones.php',
     type: 'POST',
     dataType: 'html',
     data: {
-          'opcion': 'returnCT',
-          'clavec': cvect
+        'opcion': 'checarConexion',
+        'clave': data.clve
           },
-  }).done(function(res) {
-      $('#Eccoctcve').html(res);
-  }).fail(function() {
-        console.log("error");
-  }) 
-}
-
-function returnCCos(cvect, cvecc){
-  $.ajax({
-    url: 'php/funciones.php',
-    type: 'POST',
-    dataType: 'html',
-    data: {
-          'opcion': 'returnCCos',
-          'clavec': cvect,
-          'claves': cvecc
-          },
-  }).done(function(res) {
-      $('#Ecvecencos').html(res);
-  }).fail(function() {
-        console.log("error");
-  }) 
-}
-
-$('#Eccoctcve').change(function (){
-  var clave = $("#Eccoctcve").val();
-
-  $.ajax({
-    url: 'php/funciones.php',
-    type: 'POST',
-    dataType: "html",
-    data: {
-      "opcion": 'getCC',
-      "cvecct": clave
-    }
-
-  }).done(function(res) {
-     $('#Ecvecencos').html(res);
-  }).fail(function() {
-    console.log("error");
-  })
-});
-
-$('#Enumeronna').change(function (){
-  var cvect = $("#Eccoctcve").val();
-    var clave = $("#Enumeronna").val();
-    console.log(cvect);
-    console.log(clave);
-
-    $.ajax({
-    url: 'php/funciones.php',
-    type: 'POST',
-    dataType: "html",
-    data: {
-      "opcion": 'getName',
-      "rhctno": cvect,
-      "nomina": clave
-    }
-
-  }).done(function(res) {
-     $('#Enombreusr').val(res);
-     console.log(res);
-  }).fail(function() {
-    console.log("error");
-  })
-});
-
-$("#boton1").click(function(){
-  $('#Econtrasen').attr('type', 'text');
-});
-
-$( "#actualizaUsuario" ).click(function() {
-  var ccoct = $('#Eccoctcve').val();
-  var cvecc = $('#Ecvecencos').val();
-  var nunna = $('#Enumeronna').val();
-  var nomus = $('#Enombreusr').val();
-  var usuar = $('#Eusuarious').val();
-  var passw = $('#Econtrasen').val();
-  var cvero = $('#Eclaverolx').val();
-
-  if(ccoct == ''){
-    $('#Eccoctcve').focus();
-  }else if(cvecc == ''){
-    $('#Ecvecencos').focus();
-  }else if(nunna == ''){
-    $('#Enumeronna').focus();
-  }else if(usuar == ''){
-    $('#Eusuarious').focus();
-  }else if(passw == ''){
-    $('#Econtrasen').focus();
-  }else if(cvero == ''){
-    $('#Eclaverolx').focus();
-  }else{
-    $.ajax({
-        url: 'php/funciones.php',
-        type: 'POST',
-        dataType: "json",
-        data: {
-          "opcion": 'updateUser',
-          "ccoctx" : ccoct,
-          "cveccx" : cvecc,
-          "nunnax" : nunna,
-          "nomusx" : nomus,
-          "usuarx" : usuar,
-          "passwx" : passw,
-          "cverox" : cvero
-        }
-      }).done(function(res) {
-        if (res.opc == 1) {
-          alertify.success(res.msj);
-        }else if(res.opc == 2){
-          alertify.error(res.msj);
+    }).done(function(res) {
+        if(res==1){
+          alertify.success('La base de datos esta disponible');
+          riloud(res, data.num);
+          //$('#usuario').DataTable().ajax.reload();
         }else{
-          alertify.warning(res.msj);
+          alertify.error('La base de datos NO esta disponible');
         }
-        $('#usuario').DataTable().ajax.reload();
-      }).fail(function() {
-        console.log("error");
-      })
+    }).fail(function() {
+          console.log("error");
+    }) 
+  });
+}
+
+
+var idioma_espanol = {
+  "decimal":        "",
+  "emptyTable":     "No hay información para mostrar",
+  "info":           "Mostrando de _START_ a _END_ registros",
+  "infoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+  "infoFiltered":   "(filtrado de un total de _MAX_ registros)",
+  "infoPostFix":    "",
+  "thousands":      ",",
+  "lengthMenu":     "Mostrar _MENU_ registros",
+  "loadingRecords": "Cargando...",
+  "processing":     "Procesando...",
+  "search":         "Buscar:",
+  "zeroRecords":    "No se encontró información para mostrar",
+  "paginate": {
+      "first":      "Primero",
+      "last":       "Ultimo",
+      "next":       "Siguiente",
+      "previous":   "Anterior"
+  },
+  "aria": {
+      "sortAscending":  ": activate to sort column ascending",
+      "sortDescending": ": activate to sort column descending"
   }
-});
+}
+
+

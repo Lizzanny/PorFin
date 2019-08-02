@@ -64,168 +64,26 @@
 		
 		
 	private function getconexionremota(){
-		$array["data"] = [];
-        $inf=array();  $ct0 = array(); $ct1 = array(); $ct2 = array(); $ct3 = array(); $ct4 = array(); $ct5 = array(); $ct6 = array(); $ct7 = array(); $ct8 = array(); $ct9 = array(); $ct10 = array(); $ct11 = array(); $ct12 = array(); $ct13 = array(); $ct14 = array(); $ct15 = array(); $ct16 = array(); $ct17 = array(); $ct18 = array(); $ct19 = array(); $ct20 = array(); $ct21 = array(); $ct22 = array(); $ct23 = array(); $ct24 = array(); $ct25 = array(); $ct26 = array(); $ct27 = array(); $ct28 = array(); $ct29 = array(); $ct30 = array(); $ct31 = array(); $ct32 = array(); $ct33 = array(); $ct34 = array(); 
-        $tamanioarreglo= sizeof($this->cnx);
+
+        $tamanioarreglo=sizeof($this->cnx);
         for($i=0; $i<$tamanioarreglo; $i++){
        //$i=13;
-            if($this->cnx[$i]['cone']!=0){
+            echo $this->cnx[$i]['cone']."<br>";
+            //if($this->cnx[$i]['cone']!=0){
                 $co = oci_connect($this->cnx[$i]['user'], $this->cnx[$i]['pass'], "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$this->cnx[$i]['host']." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$this->cnx[$i]['base'].")))");
-                if(!$co){
+
+                /*if(!$co){
                     $error = oci_error();
                     trigger_error(htmlentities($error['message'], ENT_QUOTES), E_USER_ERROR);
                 }else{
-                    if($i==0){
-                        $ct0=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==1){
-                        $ct1=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==2){
-                        $ct2=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==3){
-                        $ct3=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==4){
-                        $ct4=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==5){
-                        $ct5=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==6){
-                        $ct6=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==7){
-                        $ct7=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==8){
-                        $ct8=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==9){
-                        $ct9=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==10){
-                        $ct10=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==11){
-                        $ct11=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==12){
-                        $ct12=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==13){
-                        $ct12=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==14){
-                        $ct14=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==15){
-                        $ct15=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==16){
-                        $ct16=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==17){
-                        $ct17=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==18){
-                        $ct18=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==19){
-                        $ct19=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==20){
-                        $ct20=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==21){
-                        $ct21=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==22){
-                        $ct22=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==23){
-                        $ct23=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==24){
-                        $ct24=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==25){
-                        $ct25=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==26){
-                        $ct26=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==27){
-                        $ct27=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==28){
-                        $ct28=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==29){
-                        $ct29=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==30){
-                        $ct30=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==31){
-                        $ct31=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==32){
-                        $ct33=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==33){
-                        $ct33=$this->getInformacionCedulas($co); 
-                    }
-                    if($i==34){
-                        $ct34=$this->getInformacionCedulas($co); 
-                    }
-                }
-            }
-           
+                    $co;
+                    //$this->getInformacionCedulas($co);
+                }*/
+            //}
+
+            //$this->getInformacionCedulas($co); 
         }
-         //$inf[$i]
-         $array["data"][]=array(
-                    'ct0' => $ct0,
-                    'ct1' => $ct1,
-                    'ct2' => $ct2,
-                    'ct3' => $ct3,
-                    'ct4' => $ct4,
-                    'ct5' => $ct5,
-                    'ct6' => $ct6,
-                    'ct7' => $ct7,
-                    'ct8' => $ct8,
-                    'ct9' => $ct9,
-                    'ct10' => $ct10,
-                    'ct11' => $ct11,
-                    'ct12' => $ct12,
-                    'ct13' => $ct13,
-                    'ct14' => $ct14,
-                    'ct15' => $ct15,
-                    'ct16' => $ct16,
-                    'ct17' => $ct17,
-                    'ct18' => $ct18,
-                    'ct19' => $ct19,
-                    'ct20' => $ct20,
-                    'ct21' => $ct21,
-                    'ct22' => $ct22,
-                    'ct23' => $ct23,
-                    'ct24' => $ct24,
-                    'ct25' => $ct25,
-                    'ct26' => $ct26,
-                    'ct27' => $ct27,
-                    'ct28' => $ct28,
-                    'ct29' => $ct29,
-                    'ct30' => $ct30,
-                    'ct31' => $ct31,
-                    'ct32' => $ct32,
-                    'ct33' => $ct33,
-                    'ct34' => $ct34   
-                ); 
-     //  echo json_encode($inf);
-      //var_dump($inf);
-      //$this->hojaExecel($inf);
-      echo json_encode($array); 
+           
        
     }
 
@@ -233,7 +91,7 @@
     private function getInformacionCedulas($co){
         $inf=array();  
          
-        $sql="SELECT 
+        $sql = "INSERT INTO INFOAUDITORIA SELECT 
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
         CEDULAS.CONTNUM CEDULA,
@@ -266,63 +124,17 @@
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
         ORDER BY 2,3"; 
+
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);
-        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-            if(!isset($row["CONTFECHADQ"])){
-                $FECHADQ=null;
-            }else{
-                $FECHADQ=$row["CONTFECHADQ"];
-            }
-            if(!isset($row["CONTFECHDETDEP"])){
-                $HDETDEP=null;
-            }else{
-                $HDETDEP=$row["CONTFECHDETDEP"];
-            }
-            if(!isset($row['CONTFECHBAJA'])){
-                $FECHBAJ=null;
-            }else{
-                $FECHBAJ=$row['CONTFECHBAJA'];
-            }
-            $inf[$i]= $fila = array('ccuenta' =>$row['CUENTA'],
-                                    'ccentro' =>$row['CENTRO_TRABAJO'],
-                                    'ccedula' =>$row['CEDULA'],
-                                    'numacti'=>$row['NUMACTIVO'],
-                                    'cccosto' =>$row['CONTCC'],
-                                    'ccontsc' =>$row['CONTSC'],
-                                    'contssc'=>$row['CONTSSC'],
-                                    'cntsssc'=>$row['CONTSSSC'],
-                                    'contdes'=>$row['CONTDES'],
-                                    'FECHADQ'=>$FECHADQ,
-                                    'factuer'=>$row['CONTFACTURA'],
-                                    'cncosto'=>$row['CONTCOSTO'],
-                                    'rigbien'=>$row['CONTORIGBIEN'],
-                                    'TASADEP'=>$row['CONTASADEP'],
-                                    'FECHCAP'=>$row['CONTFECHCAP'],
-                                    'FECHDEP'=>$row['CONTFECHDEP'],
-                                    'TPOLIZA'=>$row['CONTPOLIZA'],
-                                    'REFALTA'=>$row['CONTREFALTAS'],
-                                    'REFBAJA'=>$row['CONTREFBAJAS'],
-                                    'NTABONO'=>$row['CONTABONO'],
-                                    'FECHMOV'=>$row['CONTFECHMOV'],
-                                    'TDEPMEN'=>$row['CONTDEPMEN'],
-                                    'DEPANUA'=>$row['CONTDEPANUAL'],
-                                    'DEPACUM'=>$row['CONTDEPACUM'],
-                                    'SALXDEP'=>$row['CONTSALXDEP'],
-                                    'BAJADEP'=>$row['CONTBAJADEP'],
-                                    'TMESDEP'=>$row['CONTMESDEP'],
-                                    'HDETDEP'=>$HDETDEP,
-                                    'FECHBAJ'=>$FECHBAJ
-                                );
-                               /**/
-        }
         oci_free_statement($stmt);
         oci_close($co);
         
-        //echo json_encode($inf);
-        return $inf; 
+       
         //$this->hojaExecel($inf); 
+        
     }
+
     public function getMetodoAcceso(){
     	$this->getDatosConexionesRemotas(); 
         $this->getconexionremota(); 
