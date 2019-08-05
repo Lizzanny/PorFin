@@ -97,12 +97,7 @@ class Adquisiciones extends ConexionOracle{
 
             //informacion en array  
             $conex= $this->comprobarConexionCT($host,$base,$user,$pass); 
-            $concvect = array('cone' => $conex,
-            				  'host' => $host,
-            				  'daba' => $base,
-            				  'user' => $user,
-            				  'pass' => $pass
-        					);
+            $concvect = array('cone' => $conex);
             oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
             unset($row); //eliminamos la fila para evitar sobrecargar la memoria
             echo json_encode($concvect);
@@ -116,6 +111,8 @@ class Adquisiciones extends ConexionOracle{
         try{    
             $conexion= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
             $checar=1;
+            $this->altasAquisicion($conexion); 
+
             $conexion = null;
         }catch(PDOException $e){
              //echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
@@ -125,7 +122,8 @@ class Adquisiciones extends ConexionOracle{
 	}
 
 
-	public function altasAquisicion(){
+	public function altasAquisicion($conn){
+		//print_r ($conn);
 		$sql= "SELECT CE.CONTCT
 		,CE.CONTNUM
 		,CE.CONTCC
@@ -143,14 +141,49 @@ class Adquisiciones extends ConexionOracle{
 		,T.CTDESCRIP
 		,CC.CCDES
 		FROM CEDULAS CE,CENTROS_DE_TRABAJO T ,CUENTAS CC ,ACTIVOS A
-		WHERE CE.CONTCC=&CUENTA AND 
-		TO_NUMBER(TO_CHAR(CE.CONTFECHMOV,'yyyy'))='$this->anio' AND Nvl(CE.CONTABONO,0)=0 AND
+		WHERE TO_NUMBER(TO_CHAR(CE.CONTFECHMOV,'yyyy'))='$this->anio' AND Nvl(CE.CONTABONO,0)=0 AND
 		CE.CONTTIPMOV= 'A1' AND
 		CE.CONTCT=T.CTCENTRAB AND
 		CE.CONTCC=CC.CCNUM AND
 		CE.CONTCT   =A.CONTCT(+) AND
 		CE.CONTNUM=A.CONTNUM(+)
-		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC;";
+		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC";
+
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		//$numrow = $stmt->rowCount();
+		//$query= $conn->query($sql);
+		//$numrow =$->rowCount();
+		for ($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) { 
+			$ID=($i+1);							//NUMBER(10)   
+			$CONTCT = $row->CONTCT;				//NUMBER(3)    
+		    $CONTNUM = $row->CONTNUM;			//NUMBER(8)    
+		    $CONTCC = $row->CONTCC;				//NUMBER(4)    
+		    $CONTSSC = $row->CONTSSC;			//NUMBER(4)    
+		    $CONTSSSC = $row->CONTSSSC ;		//NUMBER(4)    
+		    $ACTNUMERO = $row->ACTNUMERO;		//VARCHAR2(13) 
+		    $CONTDES = $row->CONTDES;			//VARCHAR2(100)
+		    $CONTMARCA = $row->CONTMARCA;		//VARCHAR2(10) 
+		    $CONTMODELO = $row->CONTMODELO;		//VARCHAR2(10) 
+		    $CONTSERIE = $row->CONTSERIE;		//VARCHAR2(18) 
+		    $CONTFECHCAP = $row->CONTFECHCAP;	//DATE         
+		    $CONTFACTURA = $row->CONTFACTURA;	//VARCHAR2(12) 
+		    $CONTCOSTO = $row->CONTCOSTO;		//NUMBER       
+		    $CONTDEPACUM = $row->CONTDEPACUM;	//NUMBER       
+		    $TIPOMOV = 1;//tipó					//NUMBER(1)    
+		    $CTDESCRIP = $row->CTDESCRIP;		//VARCHAR2(40) 
+		    $CCDES = $row->CCDES; 				//VARCHAR2(100)
+
+		  
+ //$imprinfo= "$ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES <br>"; https://coderadio.freecodecamp.org/
+
+		$insertar =$this->insertarTablaTemporal($ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES, $conn); 
+	
+		   echo "$insertar"; 
+		}
+	
+		$stmt = null;
+		//return $query;
 	}
 
 
@@ -175,8 +208,7 @@ class Adquisiciones extends ConexionOracle{
 		FROM    CEDULAS CE
 		       ,CENTROS_DE_TRABAJO T
 		       ,CUENTAS CC, HISTORICO_BAJAS A
-		WHERE CE.CONTCC=1216 AND
-		TO_NUMBER(TO_CHAR(CE.CONTFECHBAJA,'yyyy'))=$this->anio AND
+		WHERE TO_NUMBER(TO_CHAR(CE.CONTFECHBAJA,'yyyy'))=$this->anio AND
 		TO_NUMBER(TO_CHAR(CE.CONTFECHMOV,'yyyy'))<=$this->anio and
 		CE.CONTABONO<>0 AND
 		CE.CONTTIPMOVB not IN ('T1','T2') AND
@@ -187,16 +219,48 @@ class Adquisiciones extends ConexionOracle{
 		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC;";
 	}
 
+//ACTNUMERO,
+//CONTDEPACUM, 
+//CONTCOSTO,
+	public function insertarTablaTemporal($ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES, $conn){
 
-	public function insertarTablaTemporal(){
-		$sql= "";
+	try {
+		$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) VALUES(:ID,:CONTCT,:CONTNUM,:CONTCC,:CONTSSC,:CONTSSSC,:HBNUMERO,:CONTDES,:CONTMARCA,:CONTMODELO,:CONTSERIE,:CONTFECHCAP,:CONTFACTURA,:CONTABONO,:CONTBAJADEP,:TIPOMOV,:CTDESCRIP,:CCDES)";
 
-		$sql.= "    
-INSERT ALL 
-INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) VALUES()";  
+		$sentencia = $conn-> prepare($sql);
+	
+		$sentencia-> bindParam(':ID', $ID, PDO::PARAM_INT);		//NUMBER(10)   	
+  		$sentencia-> bindParam(':CONTCT', $CONTCT, PDO::PARAM_INT);	//NUMBER(3)    	
+  		$sentencia-> bindParam(':CONTNUM', $CONTNUM, PDO::PARAM_INT);	//NUMBER(8)    	
+  		$sentencia-> bindParam(':CONTCC', $CONTCC, PDO::PARAM_INT);		//NUMBER(4)    
+  		$sentencia-> bindParam(':CONTSSC', $CONTSSC, PDO::PARAM_INT);	//NUMBER(4)    	
+  		$sentencia-> bindParam(':CONTSSSC', $CONTSSSC, PDO::PARAM_INT);	//NUMBER(4)    
+  		$sentencia-> bindParam(':HBNUMERO', $ACTNUMERO, PDO::PARAM_STR);	//VARCHAR2(13) 
+  		$sentencia-> bindParam(':CONTDES', $CONTDES, PDO::PARAM_STR);	//VARCHAR2(100)	
+  		$sentencia-> bindParam(':CONTMARCA', $CONTMARCA, PDO::PARAM_STR);	//VARCHAR2(10) 
+  		$sentencia-> bindParam(':CONTMODELO', $CONTMODELO, PDO::PARAM_STR);		//VARCHAR2(10) 
+  		$sentencia-> bindParam(':CONTSERIE', $CONTSERIE, PDO::PARAM_STR);	//VARCHAR2(18) 	
+  		$sentencia-> bindParam(':CONTFECHCAP', $CONTFECHCAP, PDO::PARAM_STR);	//DATE         	
+  		$sentencia-> bindParam(':CONTFACTURA', $CONTFACTURA, PDO::PARAM_STR);		//VARCHAR2(12) 
+  		$sentencia-> bindParam(':CONTABONO', $CONTCOSTO, PDO::PARAM_INT);	//NUMBER       	
+  		$sentencia-> bindParam(':CONTBAJADEP', $CONTDEPACUM, PDO::PARAM_INT);	//NUMBER       	
+  		$sentencia-> bindParam(':TIPOMOV', $TIPOMOV, PDO::PARAM_INT);	//NUMBER(1)    
+  		$sentencia-> bindParam(':CTDESCRIP', $CTDESCRIP, PDO::PARAM_STR);	//VARCHAR2(40) 	
+  		$sentencia-> bindParam(':CCDES', $CCDES, PDO::PARAM_STR);	//VARCHAR2(100)
+
+
+  		$pdoExec = $sentencia -> execute(); 
+  	}catch (PDOException $e) {
+     	print 'ERROR: '. $e->getMessage();
+     	print '<br/>Data Not Inserted';
+	}
+		if($pdoExec){
+		    //echo 'Data Inserted';
+		}
+
 	}
 
-
+//$sql.= "INSERT ALL INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) VALUES()";  
 
 }//myClassEnd
 	$ob = new Adquisiciones(2017);

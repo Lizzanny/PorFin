@@ -1,6 +1,6 @@
 <?php 
 
- header("Location:Login/Login2.php");
+	header("Location:Login/Login2.php");
 
  ?>
  
