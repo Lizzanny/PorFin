@@ -11,12 +11,10 @@ class ClaseTesteo extends ConexionOracle
 {
     //atributo 
     protected $cnx= array(); //informacion de conexion
-
     function __construct(){
         parent::__construct();
         $this->getMetodoAcceso();
-	}
-
+  }
     //metodo para obtener la informacion de las bases de datos remotas
     private function getDatosConexionesRemotas()
     {
@@ -24,9 +22,8 @@ class ClaseTesteo extends ConexionOracle
         $stmt = oci_parse($this->con2, $sql);
         oci_execute($stmt);
        /*  */
-
     
-		for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
+    for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
             
             //llamar al metodo comprobar conexion de las base de datos remotos
             $host= trim($row["IP"]);
@@ -50,8 +47,6 @@ class ClaseTesteo extends ConexionOracle
                                                );  
         }
     }
-
-
     //metodo privado para testing de las bases de datos remotas 
     private function ProbarConexionBaseRemota($host,$daba,$user,$pass)
     {
@@ -66,17 +61,12 @@ class ClaseTesteo extends ConexionOracle
         }
         return $checar; 
     }
-
-
-
     //metodo publico de acceso para llamar a metodo privados
     public function getMetodoAcceso(){
         $this->getDatosConexionesRemotas();
         //echo json_encode($this->cnx); 
     }
-
 }//endmyClass
-
     $ob = new ClaseTesteo();
     $ob->cerrarConexion2(); 
 ?>

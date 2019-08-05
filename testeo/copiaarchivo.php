@@ -10,17 +10,14 @@ include_once '../Libs/ConexionOracle.php';
 include_once 'teste.php';
 //excel 
 class Cedulas extends ClaseTesteo{
-
   
     private function getconexionremota(){
-
     $inf=array();         $ct0=array();  $ct6=array();   $ct12=array();  $ct18=array(); $ct25=array(); $ct31=array();
     $numregistros=0;      $ct1=array();  $ct7=array();   $ct13=array();  $ct19=array(); $ct26=array(); $ct32=array();
     $datacompleto=array();$ct2=array();  $ct8=array();   $ct14=array();  $ct20=array(); $ct27=array(); $ct33=array();
                           $ct3=array();  $ct9=array();   $ct15=array();  $ct22=array(); $ct28=array(); $ct34=array();
                           $ct4=array();  $ct10=array();  $ct16=array();  $ct23=array(); $ct29=array();
                           $ct5=array();  $ct11=array();  $ct17=array();  $ct24=array(); $ct30=array();
-
         /* calcular el numero de filas que contiene cada centro de trabajo  */
         $tamct0=0; $tamct6=0;  $tamct12=0;  $tamct18=0; $tamct24=0; $tamct30=0;
         $tamct1=0; $tamct7=0;  $tamct13=0;  $tamct19=0; $tamct25=0; $tamct31=0;
@@ -185,12 +182,9 @@ class Cedulas extends ClaseTesteo{
             }
            
         }
-
             $tam=array($tamct0,$tamct1,$tamct2,$tamct3,$tamct4,$tamct5,$tamct6,$tamct7,$tamct8,$tamct9,$tamct10,$tamct11,$tamct12,$tamct13,$tamct14,$tamct15,$tamct16,$tamct17,$tamct18,$tamct19,$tamct20,$tamct21,$tamct22,$tamct23,$tamct24,$tamct25,$tamct26,$tamct27,$tamct28,$tamct29,$tamct30,$tamct31,$tamct32,$tamct33,$tamct34      
             );
-
             $inf=array($ct0,$ct1,$ct2,$ct3,$ct4,$ct5,$ct6,$ct7,$ct8,$ct9,$ct10,$ct11,$ct12,$ct13,$ct14,$ct15,$ct16,$ct17,$ct18,$ct19,$ct20,$ct22,$ct23,$ct24,$ct25,$ct26,$ct27,$ct28,$ct29,$ct30,$ct31,$ct32,$ct33,$ct34); 
-
         $conta=0; 
         for ($i=0; $i<=$procesarct; $i++)//centro trabajo 
         {   
@@ -232,7 +226,6 @@ class Cedulas extends ClaseTesteo{
                                         $inf[$i][$j]['HDETDEP'],
                                         $inf[$i][$j]['FECHBAJ']
                                     ); 
-
             }//for numero de registros
               //unset($inf); //eliminamos la fila para evitar sobrecargar la memoria
         }//for centro de trabajo
@@ -247,23 +240,17 @@ class Cedulas extends ClaseTesteo{
         $this->mandarInformacionServidor($numregistros,$datacompleto);
         unset($numregistros);//nos permite eliminar variables en PHP
         unset($datacompleto);//nos permite eliminar variables en PHP
-
     }
-
     public function mandarInformacionServidor($num,$datos){
         $datos = array( "draw" => intval(15),
                         "recordsTotal"=>intval($num),
                         "recordsFiltered"=>intval($num),
                         "data"=>$datos
                      );
-
         echo json_encode($datos);
     }
-
-
     private function getInformacionCedulas($co){
         $inf=array();  //array auxiliar para guardar los movimientos
-
     $sql="SELECT 
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
@@ -297,24 +284,19 @@ class Cedulas extends ClaseTesteo{
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
         ORDER BY 2,3"; 
-
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);//Se ejecuta directo la consulta, ya que no hay parámetros
-
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){//recomerremos una a una las filas obtenidas
             if(!isset($row["CONTFECHADQ"])){
                 $FECHADQ=null;
             }else{
                 $FECHADQ=$row["CONTFECHADQ"];
             }
-
-
             if(!isset($row["CONTFECHDETDEP"])){
                 $HDETDEP=null;
             }else{
                 $HDETDEP=$row["CONTFECHDETDEP"];
             }
-
             if(!isset($row['CONTFECHBAJA'])){
                 $FECHBAJ=null;
             }else{
@@ -360,10 +342,8 @@ class Cedulas extends ClaseTesteo{
         return $inf; 
         //$this->hojaExecel($inf); 
     }
-
     public function numeroColumnas(){
         $columnas=array();
-
         $columnas = array(
              0 => 'ccuenta',
              1 => 'ccentro',
@@ -396,22 +376,14 @@ class Cedulas extends ClaseTesteo{
             28 => 'FECHBAJ'
             );
     }
-
-
     public function metodoAccesoCedula(){
         //set_time_limit(0);
         $this->getconexionremota(); 
     }
-
     public function hojaExecel(){ //
-
     }
     
-
-
-
 }
-
 $ob = new Cedulas();
 $ob->metodoAccesoCedula(); 
 $ob->cerrarConexion2(); 

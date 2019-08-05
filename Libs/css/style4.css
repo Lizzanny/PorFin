@@ -54,13 +54,13 @@ a:focus {
     width: 1px;
 }
 
-.btn-circle {
-    width: 30px;
-    height: 30px;
-    padding: 6px 0px;
+.btn-circle {/*Bonton circular para ocultar/mostrar el sidebar*/
+    width: 20px;
+    height: 20px;
+    padding: 0px 0px;
     border-radius: 15px;
     text-align: center;
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.42857;
 }
 
@@ -77,7 +77,7 @@ span {
 }
 
 #div1{
-    width:90%;
+    width:95%;
 }
 
 #divbot{
@@ -98,19 +98,19 @@ span {
 
 #logox{
     float:left;  
-    width: 57%; 
+    width: 55%; 
     height: 100%; 
-    margin-left: 3%
+    margin-left: 2%
 }
 #imglogo{
-    width: 80%
+    width: 100%
 }
 #div3{
-    float:right;  
-    width: 40%; 
+    float:left;  
+    width: 35%; 
     height: 10%; 
     vertical-align: middle; 
-    text-align: left;
+    text-align: center;
 }
 #h4s{
     color: #9D2449;
@@ -140,7 +140,7 @@ span {
     text-align: center;
 }
 
-#sidebar.active .sidebar-header h3,
+#sidebar.active .sidebar-header h4,
 #sidebar.active .CTAs {
     display: none;
 }
@@ -154,8 +154,8 @@ span {
 }
 
 #sidebar.active ul li a {
-    padding: 20px 10px;
-    text-align: center;
+    padding: 20px 15px;
+    text-align: left;
     font-size: 0.85em;
 }
 
@@ -180,7 +180,7 @@ span {
 }
 
 #sidebar .sidebar-header {
-    padding: 20px;
+    padding: 15px;
     background: #4E232E;
 }
 
@@ -226,7 +226,7 @@ a[data-toggle="collapse"] {
     transform: translateY(-50%);
 }
 
-ul ul a {
+ul ul a {/*Espacio entre las opciones de cada dropdown*/
     font-size: 0.9em !important;
     padding-left: 30px !important;
     background: #621132;

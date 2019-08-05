@@ -10,7 +10,6 @@ include_once '../Libs/ConexionOracle.php';
 include_once 'teste.php';
 //excel 
 class Cedulas extends ClaseTesteo{
-
   
     public function getconexionremota(){
         //echo $this->cnx[0]['host']; 
@@ -26,7 +25,6 @@ class Cedulas extends ClaseTesteo{
                //echo "conexion exitosa de php a oracle <br> xxsss";
             }
     }
-
     public function getInformacionCedulas($co){
         $inf=array(); 
         $sql="SELECT
@@ -62,12 +60,9 @@ class Cedulas extends ClaseTesteo{
         FROM CEDULAS,CUENTAS
         WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DDMMYYYY')
         ORDER BY 2,3"; 
-
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);
-
         for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
-
             $inf[$i] = $fila = array('cuenta' => $row['CUENTA'],
                                      'centro' => $row['CENTRO_TRABAJO'],
                                      'cedula' => $row['CEDULA'],
@@ -97,21 +92,14 @@ class Cedulas extends ClaseTesteo{
                                      'contmesdep' => $row['CONTMESDEP'],
                                      'contfechdetdep' => $row['CONTFECHDETDEP'],
                                      'contfechbaja' => $row['CONTFECHBAJA']);
-
         }
         oci_free_statement($stmt);
         oci_close($co);
-
         echo json_encode($inf);
     }
-
     public function hojaExecel(){
-
     }
-
-
 }
-
 $ob = new Cedulas();
 $ob->getconexionremota();  
 $ob->cerrarConexion2(); 
