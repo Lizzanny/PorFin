@@ -18,7 +18,7 @@ class Adquisiciones extends ConexionOracle{
 	//construtor
 	function __construct($anio){
 		$this->anio=$anio;
-		//parent::__construct();
+		parent::__construct();
 	}
 	//imagenes escritorio remoto de recuroos humanos
 	//carpeta-> que se llame  remotamente 193.0.0.45
@@ -138,14 +138,21 @@ class Adquisiciones extends ConexionOracle{
 	public function randondigitos(){
 		$numrando=92383;
 		$num1=rand(1,10);
-		$num2=rand(1,10);
-		$num3=rand(1,10);
-		$num4=rand(1,10);
+		$num2=rand(0,10);
+		$num3=rand(0,10);
+		$num4=rand(0,10);
 
 		$numrando="$num1"."$num2"."$num3".$num4;
 
 
 		return (int)$numrando;
+	}
+
+	public function formatearFechaDiaMesAnio($fechadb){
+		$fecha = new DateTime($fechadb); 
+		$fomfecha = $fecha->format("d-m-Y"); 	
+
+		return $fomfecha; 
 	}
 
 
@@ -162,7 +169,7 @@ class Adquisiciones extends ConexionOracle{
 		,CE.CONTMARCA
 		,CE.CONTMODELO
 		,CE.CONTSERIE
-		,CE.CONTFECHCAP
+		,TO_DATE(CE.CONTFECHCAP, 'DD/MM/YY') CONTFECHCAP
 		,CE.CONTFACTURA
 		,CE.CONTCOSTO
 		,CE.CONTDEPACUM
@@ -183,24 +190,25 @@ class Adquisiciones extends ConexionOracle{
 		//$query= $conn->query($sql);
 		//$numrow =$->rowCount();
 		for ($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) {
-			$datoAlta[$i]= array('id' =>($i+1),
-							 'CONTCT' => $row->CONTCT,
-							 'CONTNUM' => $row->CONTNUM,
-							 'CONTCC' => $row->CONTCC,
-							 'CONTSSC' => $row->CONTSSC,
-							 'CONTSSSC' => $row->CONTSSSC,
-							 'ACTNUMERO' => $row->ACTNUMERO,
-							 'CONTDES' => $row->CONTDES,
-							 'CONTMARCA' => $row->CONTMARCA,
-							 'CONTMODELO' => $row->CONTMODELO,
-							 'CONTSERIE' => $row->CONTSERIE,
-							 'CONTFECHCAP' => $row->CONTFECHCAP,
-							 'CONTFACTURA' => $row->CONTFACTURA,
-							 'CONTCOSTO' => $row->CONTCOSTO,
-							 'CONTDEPACUM' => $row->CONTDEPACUM,
-							 'TIPOMOV' => $row->TIPOMOV,
-							 'CTDESCRIP' => $row->CTDESCRIP,
-							 'CCDES' => $row->CCDES
+			$fecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
+			$datoAlta[$i]= array('ID' =>($i+1),
+							 'CONTCT' =>(int)$row->CONTCT,
+							 'CONTNUM' =>(int)$row->CONTNUM,
+							 'CONTCC' =>(int)$row->CONTCC,
+							 'CONTSSC' =>(int)$row->CONTSSC,
+							 'CONTSSSC' =>(int)$row->CONTSSSC,
+							 'ACTNUMERO' =>"'".$row->ACTNUMERO."'",
+							 'CONTDES' => "'".$row->CONTDES."'",
+							 'CONTMARCA' => "'".$row->CONTMARCA."'",
+							 'CONTMODELO' => "'".$row->CONTMODELO."'",
+							 'CONTSERIE' => "'".$row->CONTSERIE."'",
+							 'CONTFECHCAP' => "'".$fecha."'",
+							 'CONTFACTURA' => "'".$row->CONTFACTURA."'",
+							 'CONTCOSTO' => floatval($row->CONTCOSTO),
+							 'CONTDEPACUM' => floatval($row->CONTDEPACUM),
+							 'TIPOMOV' => 1,
+							 'CTDESCRIP' => "'".$row->CTDESCRIP."'",
+							 'CCDES' => "'".$row->CCDES."'"
 							 );
 			//$ID=($i+1);							//NUMBER(10)
 			//$CONTCT = $row->CONTCT;				//NUMBER(3)
@@ -228,9 +236,12 @@ class Adquisiciones extends ConexionOracle{
 
 		$stmt = null;
 		$conn = null;
-		echo json_encode($datoAlta);
+		//echo json_encode($datoAlta);
 		//return $query;
+		$this->insertarTablaTemporal($datoAlta); 
 	}
+
+
 
 
 	public function bajasAquisicion(){
@@ -268,41 +279,57 @@ class Adquisiciones extends ConexionOracle{
 //ACTNUMERO,
 //CONTDEPACUM,
 //CONTCOSTO,
-	public function insertarTablaTemporal($ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES, $conn){
+	public function insertarTablaTemporal($item){
 
-	try {
-		$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) VALUES(:ID,:CONTCT,:CONTNUM,:CONTCC,:CONTSSC,:CONTSSSC,:HBNUMERO,:CONTDES,:CONTMARCA,:CONTMODELO,:CONTSERIE,:CONTFECHCAP,:CONTFACTURA,:CONTABONO,:CONTBAJADEP,:TIPOMOV,:CTDESCRIP,:CCDES)";
+	//try {
+		$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
+		VALUES(
+		".$item[0]['ID'].",
+		".$item[0]['CONTCT'].",
+		".$item[0]['CONTNUM'].",
+		".$item[0]['CONTCC'].",
+		".$item[0]['CONTSSC'].",
+		".$item[0]['CONTSSSC'].",
+		".$item[0]['ACTNUMERO'].", 
+		".$item[0]['CONTDES'].",
+		".$item[0]['CONTMARCA'].",
+		".$item[0]['CONTMODELO'].",
+		".$item[0]['CONTSERIE'].",
+		".$item[0]['CONTFECHCAP'].",
+		".$item[0]['CONTFACTURA'].",
+		".$item[0]['CONTCOSTO'].",
+		".$item[0]['CONTDEPACUM'].",
+		".$item[0]['TIPOMOV'].",
+		".$item[0]['CTDESCRIP'].",".$item[0]['CCDES'].")";
 
-		$sentencia = $conn-> prepare($sql);
-
-		$sentencia-> bindParam(':ID', $ID, PDO::PARAM_INT);		//NUMBER(10)
-  		$sentencia-> bindParam(':CONTCT', $CONTCT, PDO::PARAM_INT);	//NUMBER(3)
-  		$sentencia-> bindParam(':CONTNUM', $CONTNUM, PDO::PARAM_INT);	//NUMBER(8)
-  		$sentencia-> bindParam(':CONTCC', $CONTCC, PDO::PARAM_INT);		//NUMBER(4)
-  		$sentencia-> bindParam(':CONTSSC', $CONTSSC, PDO::PARAM_INT);	//NUMBER(4)
-  		$sentencia-> bindParam(':CONTSSSC', $CONTSSSC, PDO::PARAM_INT);	//NUMBER(4)
-  		$sentencia-> bindParam(':HBNUMERO', $ACTNUMERO, PDO::PARAM_STR);	//VARCHAR2(13)
-  		$sentencia-> bindParam(':CONTDES', $CONTDES, PDO::PARAM_STR);	//VARCHAR2(100)
-  		$sentencia-> bindParam(':CONTMARCA', $CONTMARCA, PDO::PARAM_STR);	//VARCHAR2(10)
-  		$sentencia-> bindParam(':CONTMODELO', $CONTMODELO, PDO::PARAM_STR);		//VARCHAR2(10)
-  		$sentencia-> bindParam(':CONTSERIE', $CONTSERIE, PDO::PARAM_STR);	//VARCHAR2(18)
-  		$sentencia-> bindParam(':CONTFECHCAP', $CONTFECHCAP, PDO::PARAM_STR);	//DATE
-  		$sentencia-> bindParam(':CONTFACTURA', $CONTFACTURA, PDO::PARAM_STR);		//VARCHAR2(12)
-  		$sentencia-> bindParam(':CONTABONO', $CONTCOSTO, PDO::PARAM_INT);	//NUMBER
-  		$sentencia-> bindParam(':CONTBAJADEP', $CONTDEPACUM, PDO::PARAM_INT);	//NUMBER
-  		$sentencia-> bindParam(':TIPOMOV', $TIPOMOV, PDO::PARAM_INT);	//NUMBER(1)
-  		$sentencia-> bindParam(':CTDESCRIP', $CTDESCRIP, PDO::PARAM_STR);	//VARCHAR2(40)
-  		$sentencia-> bindParam(':CCDES', $CCDES, PDO::PARAM_STR);	//VARCHAR2(100)
-
-
-  		$pdoExec = $sentencia -> execute();
-  	}catch (PDOException $e) {
-     	print 'ERROR: '. $e->getMessage();
-     	print '<br/>Data Not Inserted';
-	}
-		if($pdoExec){
-		    //echo 'Data Inserted';
-		}
+		echo "$sql";
+		//$sentencia = $conn-> prepare($sql);
+		//$sentencia-> bindParam(':ID', $ID, PDO::PARAM_INT);		//NUMBER(10)
+  		//$sentencia-> bindParam(':CONTCT', $CONTCT, PDO::PARAM_INT);	//NUMBER(3)
+  		//$sentencia-> bindParam(':CONTNUM', $CONTNUM, PDO::PARAM_INT);	//NUMBER(8)
+  		//$sentencia-> bindParam(':CONTCC', $CONTCC, PDO::PARAM_INT);		//NUMBER(4)
+  		//$sentencia-> bindParam(':CONTSSC', $CONTSSC, PDO::PARAM_INT);	//NUMBER(4)
+  		//$sentencia-> bindParam(':CONTSSSC', $CONTSSSC, PDO::PARAM_INT);	//NUMBER(4)
+  		//$sentencia-> bindParam(':HBNUMERO', $ACTNUMERO, PDO::PARAM_STR);	//VARCHAR2(13)
+  		//$sentencia-> bindParam(':CONTDES', $CONTDES, PDO::PARAM_STR);	//VARCHAR2(100)
+  		//$sentencia-> bindParam(':CONTMARCA', $CONTMARCA, PDO::PARAM_STR);	//VARCHAR2(10)
+  		//$sentencia-> bindParam(':CONTMODELO', $CONTMODELO, PDO::PARAM_STR);		//VARCHAR2(10)
+  		//$sentencia-> bindParam(':CONTSERIE', $CONTSERIE, PDO::PARAM_STR);	//VARCHAR2(18)
+  		//$sentencia-> bindParam(':CONTFECHCAP', $CONTFECHCAP, PDO::PARAM_STR);	//DATE
+  		//$sentencia-> bindParam(':CONTFACTURA', $CONTFACTURA, PDO::PARAM_STR);		//VARCHAR2(12)
+  		//$sentencia-> bindParam(':CONTABONO', $CONTCOSTO, PDO::PARAM_INT);	//NUMBER
+  		//$sentencia-> bindParam(':CONTBAJADEP', $CONTDEPACUM, PDO::PARAM_INT);	//NUMBER
+  		//$sentencia-> bindParam(':TIPOMOV', $TIPOMOV, PDO::PARAM_INT);	//NUMBER(1)
+  		//$sentencia-> bindParam(':CTDESCRIP', $CTDESCRIP, PDO::PARAM_STR);	//VARCHAR2(40)
+  		//$sentencia-> bindParam(':CCDES', $CCDES, PDO::PARAM_STR);	//VARCHAR2(100)
+  		//$pdoExec = $sentencia -> execute();
+  		//}catch (PDOException $e) {
+    	// 	print 'ERROR: '. $e->getMessage();
+    	// 	print '<br/>Data Not Inserted';
+		//}
+		//if($pdoExec){
+		//    //echo 'Data Inserted';
+		//}
 
 	}
 
@@ -310,12 +337,7 @@ class Adquisiciones extends ConexionOracle{
 
 }//myClassEnd
 	$ob = new Adquisiciones(2017);
-	//for ($i=0; $i <10; $i++) {
-	//	echo $ob->randondigitos() ."<br>";
-	//}
-
-
-	$ob->getCuentas()
+	//$ob->getCuentas(); 
 	switch ($_POST['opcion']) {
 		case 'cargaListaCentroTrabajo':
 			$ob->getListaCT();
@@ -326,8 +348,8 @@ class Adquisiciones extends ConexionOracle{
 			break;
 
 		default:
-			//echo "La opcion no se encuentra definida en la clase!: "._POST['opcion'];
-			$ob->randondigitos();
+			echo "La opcion no se encuentra definida en la clase!: "._POST['opcion'];
+			//$ob->randondigitos();
 			break;
 	}/**/
 	$ob->cerrarConexion2();
