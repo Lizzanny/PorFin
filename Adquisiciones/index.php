@@ -12,6 +12,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.10/alertify.core.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.10/alertify.default.css">
+
 </head>
 
 <body>
@@ -48,6 +51,7 @@
 
     <script src="../Libs/js/jquery-3.3.1.js"></script>
     <script src="../Libs/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/alertify.js/0.3.10/alertify.min.js"></script>
     
     <script>
         $(document).ready(function() {
@@ -91,9 +95,11 @@
                         console.log("success");
                         if(res.cone==1){
                             $(idsemaforo).css('background-color', verde);
+                            alertify.success('se proceso correctamente: '+res.nomb,5);
                         }
                         if(res.cone==0){
                             $(idsemaforo).css('background-color', rojo);
+                            alertify.error('!Error en la base de datos procesar de manera manual: '+res.nomb,5);
                         }
                         console.log(res);
                     })

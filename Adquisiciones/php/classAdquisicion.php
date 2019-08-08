@@ -9,11 +9,17 @@
  *  Modificacion:
  *
  */
+//https://docs.oracle.com/cd/B19306_01/server.102/b14237/initparams122.htm#REFRN10119
 include_once '../../Libs/ConexionOracle.php';
 
 class Adquisiciones extends ConexionOracle{
 
 	private $anio=2018;
+	private $altasAqui=0; 
+	private $bajasAqui=0;
+	private $conexbase=0; 
+	private $nomcentrotrabajo='';
+	private $errorproc=''; 
 
 	//construtor
 	function __construct($anio){
@@ -94,13 +100,15 @@ class Adquisiciones extends ConexionOracle{
             $base= trim($row["SID"]);
             $user= trim($row["USUARIO"]);
             $pass= trim($row["CLAVE"]);
-
+            $this->nomcentrotrabajo= trim($row["DB_INSTANCE"]);
             //informacion en array
-            $conex= $this->comprobarConexionCT($host,$base,$user,$pass);
-            $concvect = array('cone' => $conex);
+            $this->conexbase= $this->comprobarConexionCT($host,$base,$user,$pass);
+
+            $this->imprimirJsonData(); 																//IMPRIME INFORMACION
+            //$concvect = array('cone' => $conex);
             oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
             unset($row); //eliminamos la fila para evitar sobrecargar la memoria
-            echo json_encode($concvect);
+            //echo json_encode($concvect);
 	}
 
 
@@ -111,7 +119,10 @@ class Adquisiciones extends ConexionOracle{
         try{
             $conexion= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
             $checar=1;
-            $this->altasAquisicion($conexion);
+            //$this->cambiarFormatoFecha($conexion);
+            //$this->getConfiguracionNLS($conexion);
+            	$this->obtenerAltasAquisicion($conexion);										//OBTENER ALTAS AQUISICION
+            	$this->obtenerBajasAquisicion($conexion);										//OBTENER BAJAS AQUISICION
 
             $conexion = null;
         }catch(PDOException $e){
@@ -121,43 +132,64 @@ class Adquisiciones extends ConexionOracle{
         return $checar;
 	}
 
-	public function obtnerNumroFila(){
-		$numrow=0;
-
-		$sql="SELECT ID,CONTCT
-				FROM (SELECT ID,CONTCT FROM TAB_ALTASYBAJAS ORDER BY ID DESC )
-				WHERE rownum = 1 ; ";
-
-		$sql2= "SELECT ID,CONTCT FROM TAB_ALTASYBAJAS  WHERE  ROWNUM > 1 ORDER BY ID ";
-
-		//INSETANDO DE UNO EN UNO
-		//REALIZAR UN RANDON CON 4 DIGITOS
-		//
-	}
-
 	public function randondigitos(){
 		$numrando=92383;
 		$num1=rand(1,10);
 		$num2=rand(0,10);
 		$num3=rand(0,10);
 		$num4=rand(0,10);
-
 		$numrando="$num1"."$num2"."$num3".$num4;
-
-
 		return (int)$numrando;
 	}
 
+	//31/12/17 ---- 31/DIC/17  -----  31-DIC-2017 
 	public function formatearFechaDiaMesAnio($fechadb){
-		$fecha = new DateTime($fechadb); 
-		$fomfecha = $fecha->format("d-m-Y"); 	
+		//$fecha = new DateTime($fechadb); 
+		//$fomfecha = $fecha->format("d-m-Y"); 	
 
-		return $fomfecha; 
+		//return $fomfecha; 
+	}
+
+	public function formatoFechaBaseDatos($fecha){
+		$sql= "SELECT TO_CHAR (TO_DATE('31/12/17','DD/MM/YYYY'), 'DD/MM/YYYY') AS FORMATOFECHA FROM DUAL";
+		$stid = oci_parse($this->con2,$sql);
+		oci_execute($stmt);
+		$row = oci_fetch_array($stmt, OCI_BOTH);
+	}
+
+	public function getConfiguracionNLS($conn){
+		$dataNls = array();
+		$sql="SELECT * FROM NLS_SESSION_PARAMETERS"; 
+
+		$stmt = $conn->prepare($sql);	// Preparar la sentencia
+		$stmt->execute();				// Ejecutar la sentencia
+		//print_r($row);
+		for($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) {
+        	$dataNls[$i] = array('PARAMETER' =>$row->PARAMETER,
+        						 'VALUE' =>$row->VALUE
+        						);	
+        }
+
+        $stmt=null;	// Liberar los recursos asociados a una sentencia o cursor
+        echo json_encode($dataNls);
 	}
 
 
-	public function altasAquisicion($conn){
-		//print_r ($conn);
+	//Para la fecha presentada en formato '29-DEC-2015' nls_date_formatdebe ser 'DD-MON-YYYY'. Si tiene algún otro valor, puede cambiarlo usando la siguiente consulta.
+	public function cambiarFormatoFecha($conn){
+		//$sql="ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-RR'; ALTER SESSION SET NLS_DATE_LANGUAGE = 'AMERICAN'"; 
+		$sql="ALTER SESSION SET NLS_DATE_FORMAT='DD-MM-RR'"; 
+		
+		$stmt = $conn->prepare($sql);	// Preparar la sentencia
+		$stmt->execute();				// Ejecutar la sentencia
+		$stmt=null;	// Liberar los recursos asociados a una sentencia o cursor
+	
+	}
+
+	//TO_DATE(CE.CONTFECHCAP, 'DD-MOD-RR')
+	//TO_CHAR (TO_DATE(CE.CONTFECHCAP,'DD/MM/RR'), 'DD/MM/RR') CONTFECHCAP
+	public function obtenerAltasAquisicion($conn){
+		//print_r ($conn); //obtener informacion de la conexion que se pasa como paramtro 
 		$datoAlta = array();
 		$sql= "SELECT CE.CONTCT
 		,CE.CONTNUM
@@ -169,7 +201,7 @@ class Adquisiciones extends ConexionOracle{
 		,CE.CONTMARCA
 		,CE.CONTMODELO
 		,CE.CONTSERIE
-		,TO_DATE(CE.CONTFECHCAP, 'DD/MM/YY') CONTFECHCAP
+		,CE.CONTFECHCAP
 		,CE.CONTFACTURA
 		,CE.CONTCOSTO
 		,CE.CONTDEPACUM
@@ -186,23 +218,24 @@ class Adquisiciones extends ConexionOracle{
 
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
-		//$numrow = $stmt->rowCount();
-		//$query= $conn->query($sql);
-		//$numrow =$->rowCount();
+
 		for ($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) {
-			$fecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
-			$datoAlta[$i]= array('ID' =>($i+1),
-							 'CONTCT' =>(int)$row->CONTCT,
-							 'CONTNUM' =>(int)$row->CONTNUM,
-							 'CONTCC' =>(int)$row->CONTCC,
-							 'CONTSSC' =>(int)$row->CONTSSC,
-							 'CONTSSSC' =>(int)$row->CONTSSSC,
-							 'ACTNUMERO' =>"'".$row->ACTNUMERO."'",
+			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
+			$numRando= $this->randondigitos(); 
+			$datoAlta[$i]= array(
+							 'ID' =>$numRando,
+							 'CONTCT' => (int)$row->CONTCT,
+							 'CONTNUM' => (int)$row->CONTNUM,
+							 'CONTCC' => (int)$row->CONTCC,
+							 'CONTSSC' => (int)$row->CONTSSC,
+							 'CONTSSSC' => (int)$row->CONTSSSC,
+							 'ACTNUMERO' => "'".$row->ACTNUMERO."'",
 							 'CONTDES' => "'".$row->CONTDES."'",
 							 'CONTMARCA' => "'".$row->CONTMARCA."'",
 							 'CONTMODELO' => "'".$row->CONTMODELO."'",
 							 'CONTSERIE' => "'".$row->CONTSERIE."'",
-							 'CONTFECHCAP' => "'".$fecha."'",
+							 //'CONTFECHCAP' => "'".$formFecha."'",
+							 'CONTFECHCAP' => "'".$row->CONTFECHCAP."'",
 							 'CONTFACTURA' => "'".$row->CONTFACTURA."'",
 							 'CONTCOSTO' => floatval($row->CONTCOSTO),
 							 'CONTDEPACUM' => floatval($row->CONTDEPACUM),
@@ -210,41 +243,22 @@ class Adquisiciones extends ConexionOracle{
 							 'CTDESCRIP' => "'".$row->CTDESCRIP."'",
 							 'CCDES' => "'".$row->CCDES."'"
 							 );
-			//$ID=($i+1);							//NUMBER(10)
-			//$CONTCT = $row->CONTCT;				//NUMBER(3)
-		    //$CONTNUM = $row->CONTNUM;			//NUMBER(8)
-		    //$CONTCC = $row->CONTCC;				//NUMBER(4)
-		    //$CONTSSC = $row->CONTSSC;			//NUMBER(4)
-		    //$CONTSSSC = $row->CONTSSSC ;		//NUMBER(4)
-		    //$ACTNUMERO = $row->ACTNUMERO;		//VARCHAR2(13)
-		    //$CONTDES = $row->CONTDES;			//VARCHAR2(100)
-		    //$CONTMARCA = $row->CONTMARCA;		//VARCHAR2(10)
-		    //$CONTMODELO = $row->CONTMODELO;		//VARCHAR2(10)
-		    //$CONTSERIE = $row->CONTSERIE;		//VARCHAR2(18)
-		    //$CONTFECHCAP = $row->CONTFECHCAP;	//DATE
-		    //$CONTFACTURA = $row->CONTFACTURA;	//VARCHAR2(12)
-		    //$CONTCOSTO = $row->CONTCOSTO;		//NUMBER
-		    //$CONTDEPACUM = $row->CONTDEPACUM;	//NUMBER
-		    //$TIPOMOV = 1;//tipó					//NUMBER(1)
-		    //$CTDESCRIP = $row->CTDESCRIP;		//VARCHAR2(40)
-		    //$CCDES = $row->CCDES; 				//VARCHAR2(100)
-		    //$imprinfo= "$ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES <br>"; https://coderadio.freecodecamp.org/
-		//$insertar =$this->insertarTablaTemporal($ID, $CONTCT, $CONTNUM, $CONTCC, $CONTSSC, $CONTSSSC, $ACTNUMERO, $CONTDES, $CONTMARCA, $CONTMODELO, $CONTSERIE, $CONTFECHCAP, $CONTFACTURA, $CONTCOSTO, $CONTDEPACUM, $TIPOMOV, $CTDESCRIP, $CCDES, $conn);
-
-		   //echo "$insertar";
 		}
 
-		$stmt = null;
-		$conn = null;
-		//echo json_encode($datoAlta);
-		//return $query;
-		$this->insertarTablaTemporal($datoAlta); 
+		$stmt = null;//cerrar consulta
+		$conn = null;//cerrar  conexion
+		//ver informacion del json
+		//echo json_encode($datoAlta); 
+		$this->altasAqui= sizeof($datoAlta);
+		//$this->insertarTablaTemporal($datoAlta,1); 
 	}
 
 
 
-
-	public function bajasAquisicion(){
+	//TO_DATE(CE.CONTFECHCAP, 'DD-MOD-RR') CONTFECHCAP
+	//TO_CHAR (TO_DATE(CE.CONTFECHCAP,'DD/MM/RR'), 'DD/MM/RR') CONTFECHCAP
+	public function obtenerBajasAquisicion($conn){
+		$datoBaja = array();
 		$sql= "
 		SELECT CE.CONTCT
 		,CE.CONTNUM
@@ -256,7 +270,7 @@ class Adquisiciones extends ConexionOracle{
 		,CE.CONTMARCA
 		,CE.CONTMODELO
 		,CE.CONTSERIE
-		,CE.CONTFECHCAP
+		,TO_CHAR (TO_DATE(CE.CONTFECHCAP,'DD/MM/RR'), 'DD/MM/RR') CONTFECHCAP
 		,CE.CONTFACTURA
 		,CE.CONTABONO*-1 CONTABONO
 		,CE.CONTBAJADEP*-1 CONTBAJADEP
@@ -273,67 +287,124 @@ class Adquisiciones extends ConexionOracle{
 		CE.CONTCC=CC.CCNUM AND
 		CE.CONTCT =A.CONTCT(+) AND
 		CE.CONTNUM=A.CONTNUM(+)
-		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC;";
+		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC";
+
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+
+		for ($i=0; $row = $stmt->fetch(PDO::FETCH_ASSOC); $i++) {
+			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
+			$numRando= $this->randondigitos(); 
+			$datoBaja[$i]= array(
+							 $numRando,
+							 (int)$row['CONTCT'],
+							 (int)$row['CONTNUM'],
+							 (int)$row['CONTCC'],
+							 (int)$row['CONTSSC'],
+							 (int)$row['CONTSSSC'],
+							 "'".$row['HBNUMERO']."'",
+							 "'".$row['CONTDES']."'",
+							 "'".$row['CONTMARCA']."'",
+							 "'".$row['CONTMODELO']."'",
+							 "'".$row['CONTSERIE']."'",
+							 "'".$row['CONTFECHCAP']."'",
+							 "'".$row['CONTFACTURA']."'",
+							 floatval($row['CONTABONO']),
+							 floatval($row['CONTBAJADEP']),
+							 2,
+							 "'".$row['CTDESCRIP']."'",
+							 "'".$row['CCDES']."'"
+							 );
+		}
+
+		$stmt = null;//cerrar consulta
+		$conn = null;//cerrar  conexion
+		//echo json_encode($datoBaja); 
+		$this->bajasAqui= sizeof($datoBaja);
+		$this->insertarTablaTemporal($datoBaja,0); 
 	}
 
-//ACTNUMERO,
-//CONTDEPACUM,
-//CONTCOSTO,
-	public function insertarTablaTemporal($item){
+//ACTNUMERO, //CONTDEPACUM, //CONTCOSTO,
+/* OCUPANDO PDO  
+*  no marca errores con la fecha por tal motivo antes de pasarlo tengo que parsearlo a los valores correspondientes y despues pasarlo en un arreglo mmmm proceso que se hace en 
+*/
+	public function insertarTablaTemporal($item,$tipmovi){
+		$tamanioItem=sizeof($item);  	//variable global 
+		if($tipmovi==1){//tipo de movimiento ALTAS
+			for ($i=0; $i <$tamanioItem; $i++){ 
+				$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
+				VALUES(".$item[$i][0].",
+				".$item[$i][1].",
+				".$item[$i][2].",
+				".$item[$i][3].",
+				".$item[$i][4].",
+				".$item[$i][5].",
+				".$item[$i][6].", 
+				".$item[$i][7].",
+				".$item[$i][8].",
+				".$item[$i][9].",
+				".$item[$i][10].",
+				".$item[$i][11].",
+				".$item[$i][12].",
+				".$item[$i][13].",
+				".$item[$i][14].",
+				".$item[$i][15].",
+				".$item[$i][16].",".$item[$i][17].")";
+				//echo "$sql <br><br><br>";
+				$stid = oci_parse($this->con2,$sql);
+				oci_execute($stid);
+				oci_free_statement($stid); 
+			}
+			oci_commit($this->con2);  // Consigna la transacción pendiente de la base de datos 1,2,3,4
+		}//endtipo de movimiento altas
 
-	//try {
-		$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
-		VALUES(
-		".$item[0]['ID'].",
-		".$item[0]['CONTCT'].",
-		".$item[0]['CONTNUM'].",
-		".$item[0]['CONTCC'].",
-		".$item[0]['CONTSSC'].",
-		".$item[0]['CONTSSSC'].",
-		".$item[0]['ACTNUMERO'].", 
-		".$item[0]['CONTDES'].",
-		".$item[0]['CONTMARCA'].",
-		".$item[0]['CONTMODELO'].",
-		".$item[0]['CONTSERIE'].",
-		".$item[0]['CONTFECHCAP'].",
-		".$item[0]['CONTFACTURA'].",
-		".$item[0]['CONTCOSTO'].",
-		".$item[0]['CONTDEPACUM'].",
-		".$item[0]['TIPOMOV'].",
-		".$item[0]['CTDESCRIP'].",".$item[0]['CCDES'].")";
+		if($tipmovi==0){//tipo de movimientos BAJAS 
+			for ($i=0; $i <$tamanioItem; $i++){ 
+				$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
+				VALUES(
+				".$item[$i][0].",
+				".$item[$i][1].",
+				".$item[$i][2].",
+				".$item[$i][3].",
+				".$item[$i][4].",
+				".$item[$i][5].",
+				".$item[$i][6].", 
+				".$item[$i][7].",
+				".$item[$i][8].",
+				".$item[$i][9].",
+				".$item[$i][10].",
+				".$item[$i][11].",
+				".$item[$i][12].",
+				".$item[$i][13].",
+				".$item[$i][14].",
+				".$item[$i][15].",
+				".$item[$i][16].",".$item[$i][17].")";
+				
+				//echo "$sql <br><br><br>";
+				$stid = oci_parse($this->con2,$sql);
+				oci_execute($stid);
+				oci_free_statement($stid); 
+			}
+			oci_commit($this->con2);  // consolida todos los nuevos valores: 1, 2, 3, 4, 5
+		}
+		
+	}
 
-		echo "$sql";
-		//$sentencia = $conn-> prepare($sql);
-		//$sentencia-> bindParam(':ID', $ID, PDO::PARAM_INT);		//NUMBER(10)
-  		//$sentencia-> bindParam(':CONTCT', $CONTCT, PDO::PARAM_INT);	//NUMBER(3)
-  		//$sentencia-> bindParam(':CONTNUM', $CONTNUM, PDO::PARAM_INT);	//NUMBER(8)
-  		//$sentencia-> bindParam(':CONTCC', $CONTCC, PDO::PARAM_INT);		//NUMBER(4)
-  		//$sentencia-> bindParam(':CONTSSC', $CONTSSC, PDO::PARAM_INT);	//NUMBER(4)
-  		//$sentencia-> bindParam(':CONTSSSC', $CONTSSSC, PDO::PARAM_INT);	//NUMBER(4)
-  		//$sentencia-> bindParam(':HBNUMERO', $ACTNUMERO, PDO::PARAM_STR);	//VARCHAR2(13)
-  		//$sentencia-> bindParam(':CONTDES', $CONTDES, PDO::PARAM_STR);	//VARCHAR2(100)
-  		//$sentencia-> bindParam(':CONTMARCA', $CONTMARCA, PDO::PARAM_STR);	//VARCHAR2(10)
-  		//$sentencia-> bindParam(':CONTMODELO', $CONTMODELO, PDO::PARAM_STR);		//VARCHAR2(10)
-  		//$sentencia-> bindParam(':CONTSERIE', $CONTSERIE, PDO::PARAM_STR);	//VARCHAR2(18)
-  		//$sentencia-> bindParam(':CONTFECHCAP', $CONTFECHCAP, PDO::PARAM_STR);	//DATE
-  		//$sentencia-> bindParam(':CONTFACTURA', $CONTFACTURA, PDO::PARAM_STR);		//VARCHAR2(12)
-  		//$sentencia-> bindParam(':CONTABONO', $CONTCOSTO, PDO::PARAM_INT);	//NUMBER
-  		//$sentencia-> bindParam(':CONTBAJADEP', $CONTDEPACUM, PDO::PARAM_INT);	//NUMBER
-  		//$sentencia-> bindParam(':TIPOMOV', $TIPOMOV, PDO::PARAM_INT);	//NUMBER(1)
-  		//$sentencia-> bindParam(':CTDESCRIP', $CTDESCRIP, PDO::PARAM_STR);	//VARCHAR2(40)
-  		//$sentencia-> bindParam(':CCDES', $CCDES, PDO::PARAM_STR);	//VARCHAR2(100)
-  		//$pdoExec = $sentencia -> execute();
-  		//}catch (PDOException $e) {
-    	// 	print 'ERROR: '. $e->getMessage();
-    	// 	print '<br/>Data Not Inserted';
-		//}
-		//if($pdoExec){
-		//    //echo 'Data Inserted';
-		//}
+
+	public function imprimirJsonData(){
+		$info= array();
+
+		$info = array('cone' => $this->conexbase,
+					  'alta' => $this->altasAqui,
+					  'baja' => $this->bajasAqui,
+					  'nomb' => $this->nomcentrotrabajo 
+					);
+	
+		echo json_encode($info);
+		unset($info); //eliminamos la fila para evitar sobrecargar la memoria
 
 	}
 
-//$sql.= "INSERT ALL INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) VALUES()";
 
 }//myClassEnd
 	$ob = new Adquisiciones(2017);
@@ -349,7 +420,6 @@ class Adquisiciones extends ConexionOracle{
 
 		default:
 			echo "La opcion no se encuentra definida en la clase!: "._POST['opcion'];
-			//$ob->randondigitos();
 			break;
 	}/**/
 	$ob->cerrarConexion2();
