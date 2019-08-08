@@ -104,7 +104,7 @@ class Adquisiciones extends ConexionOracle{
             //informacion en array
             $this->conexbase= $this->comprobarConexionCT($host,$base,$user,$pass);
 
-            $this->imprimirJsonData(); 																//IMPRIME INFORMACION
+            //$this->imprimirJsonData(); 																//IMPRIME INFORMACION
             //$concvect = array('cone' => $conex);
             oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
             unset($row); //eliminamos la fila para evitar sobrecargar la memoria
@@ -296,32 +296,32 @@ class Adquisiciones extends ConexionOracle{
 			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
 			$numRando= $this->randondigitos(); 
 			$datoBaja[$i]= array(
-							 $numRando,
-							 (int)$row['CONTCT'],
-							 (int)$row['CONTNUM'],
-							 (int)$row['CONTCC'],
-							 (int)$row['CONTSSC'],
-							 (int)$row['CONTSSSC'],
-							 "'".$row['HBNUMERO']."'",
-							 "'".$row['CONTDES']."'",
-							 "'".$row['CONTMARCA']."'",
-							 "'".$row['CONTMODELO']."'",
-							 "'".$row['CONTSERIE']."'",
-							 "'".$row['CONTFECHCAP']."'",
-							 "'".$row['CONTFACTURA']."'",
-							 floatval($row['CONTABONO']),
-							 floatval($row['CONTBAJADEP']),
-							 2,
-							 "'".$row['CTDESCRIP']."'",
-							 "'".$row['CCDES']."'"
+							 'ID' =>$numRando,
+							 'CONTCT' => (int)$row['CONTCT'],
+							 'CONTNUM' => (int)$row['CONTNUM'],
+							 'CONTCC' => (int)$row['CONTCC'],
+							 'CONTSSC' => (int)$row['CONTSSC'],
+							 'CONTSSSC' => (int)$row['CONTSSSC'],
+							 'HBNUMERO' => "'".$row['HBNUMERO']."'",
+							 'CONTDES' => "'".$row['CONTDES']."'",
+							 'CONTMARCA' => "'".$row['CONTMARCA']."'",
+							 'CONTMODELO' => "'".$row['CONTMODELO']."'",
+							 'CONTSERIE' => "'".$row['CONTSERIE']."'",
+							 'CONTFECHCAP' => "'".$row['CONTFECHCAP']."'",
+							 'CONTFACTURA' => "'".$row['CONTFACTURA']."'",
+							 'CONTABONO' => floatval($row['CONTABONO']),
+							 'CONTBAJADEP' => floatval($row['CONTBAJADEP']),
+							 'TIPOMOV' => 2,
+							 'CTDESCRIP' => "'".$row['CTDESCRIP']."'",
+							 'CCDES' => "'".$row['CCDES']."'"
 							 );
 		}
 
 		$stmt = null;//cerrar consulta
 		$conn = null;//cerrar  conexion
-		//echo json_encode($datoBaja); 
+		echo json_encode($datoBaja); 
 		$this->bajasAqui= sizeof($datoBaja);
-		$this->insertarTablaTemporal($datoBaja,0); 
+		//$this->insertarTablaTemporal($datoBaja,0); 
 	}
 
 //ACTNUMERO, //CONTDEPACUM, //CONTCOSTO,
@@ -333,23 +333,24 @@ class Adquisiciones extends ConexionOracle{
 		if($tipmovi==1){//tipo de movimiento ALTAS
 			for ($i=0; $i <$tamanioItem; $i++){ 
 				$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
-				VALUES(".$item[$i][0].",
-				".$item[$i][1].",
-				".$item[$i][2].",
-				".$item[$i][3].",
-				".$item[$i][4].",
-				".$item[$i][5].",
-				".$item[$i][6].", 
-				".$item[$i][7].",
-				".$item[$i][8].",
-				".$item[$i][9].",
-				".$item[$i][10].",
-				".$item[$i][11].",
-				".$item[$i][12].",
-				".$item[$i][13].",
-				".$item[$i][14].",
-				".$item[$i][15].",
-				".$item[$i][16].",".$item[$i][17].")";
+				VALUES(
+				".$item[$i]['ID'].",
+				".$item[$i]['CONTCT'].",
+				".$item[$i]['CONTNUM'].",
+				".$item[$i]['CONTCC'].",
+				".$item[$i]['CONTSSC'].",
+				".$item[$i]['CONTSSSC'].",
+				".$item[$i]['ACTNUMERO'].", 
+				".$item[$i]['CONTDES'].",
+				".$item[$i]['CONTMARCA'].",
+				".$item[$i]['CONTMODELO'].",
+				".$item[$i]['CONTSERIE'].",
+				".$item[$i]['CONTFECHCAP'].",
+				".$item[$i]['CONTFACTURA'].",
+				".$item[$i]['CONTCOSTO'].",
+				".$item[$i]['CONTDEPACUM'].",
+				".$item[$i]['TIPOMOV'].",
+				".$item[$i]['CTDESCRIP'].",".$item[$i]['CCDES'].")";
 				//echo "$sql <br><br><br>";
 				$stid = oci_parse($this->con2,$sql);
 				oci_execute($stid);
@@ -362,30 +363,30 @@ class Adquisiciones extends ConexionOracle{
 			for ($i=0; $i <$tamanioItem; $i++){ 
 				$sql= "INSERT INTO TAB_ALTASYBAJAS (ID,CONTCT,CONTNUM,CONTCC,CONTSSC,CONTSSSC,HBNUMERO,CONTDES,CONTMARCA,CONTMODELO,CONTSERIE,CONTFECHCAP,CONTFACTURA,CONTABONO,CONTBAJADEP,TIPOMOV,CTDESCRIP,CCDES) 
 				VALUES(
-				".$item[$i][0].",
-				".$item[$i][1].",
-				".$item[$i][2].",
-				".$item[$i][3].",
-				".$item[$i][4].",
-				".$item[$i][5].",
-				".$item[$i][6].", 
-				".$item[$i][7].",
-				".$item[$i][8].",
-				".$item[$i][9].",
-				".$item[$i][10].",
-				".$item[$i][11].",
-				".$item[$i][12].",
-				".$item[$i][13].",
-				".$item[$i][14].",
-				".$item[$i][15].",
-				".$item[$i][16].",".$item[$i][17].")";
+				".$item[$i]['ID'].",
+				".$item[$i]['CONTCT'].",
+				".$item[$i]['CONTNUM'].",
+				".$item[$i]['CONTCC'].",
+				".$item[$i]['CONTSSC'].",
+				".$item[$i]['CONTSSSC'].",
+				".$item[$i]['HBNUMERO'].", 
+				".$item[$i]['CONTDES'].",
+				".$item[$i]['CONTMARCA'].",
+				".$item[$i]['CONTMODELO'].",
+				".$item[$i]['CONTSERIE'].",
+				".$item[$i]['CONTFECHCAP'].",
+				".$item[$i]['CONTFACTURA'].",
+				".$item[$i]['CONTABONO'].",
+				".$item[$i]['CONTBAJADEP'].",
+				".$item[$i]['TIPOMOV'].",
+				".$item[$i]['CTDESCRIP'].",".$item[$i]['CCDES'].")";
 				
-				//echo "$sql <br><br><br>";
-				$stid = oci_parse($this->con2,$sql);
-				oci_execute($stid);
-				oci_free_statement($stid); 
+				echo "$sql <br><br><br>";
+				//$stid = oci_parse($this->con2,$sql);
+				//oci_execute($stid);
+				//oci_free_statement($stid); 
 			}
-			oci_commit($this->con2);  // consolida todos los nuevos valores: 1, 2, 3, 4, 5
+			//oci_commit($this->con2);  // consolida todos los nuevos valores: 1, 2, 3, 4, 5
 		}
 		
 	}
