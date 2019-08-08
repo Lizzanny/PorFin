@@ -2,7 +2,7 @@
 
 include_once '../../Libs/conexionOracle.php';
 date_default_timezone_set('America/Mexico_City');
-class UserFunctions extends ConexionOracle {
+class UserFunctions extends ConexionOracle{
 	private $cve_user=11101010; 
 
 	private $co = '';
@@ -159,15 +159,13 @@ private $CONTFECHBAJA = array();
 
     private function insertaRows($arregloxd){
 
-    	$link = mysqli_connect("127.0.0.1", "root", "");
-		mysqli_select_db($link, "portalfinanciero");
-		$tildes = $link->query("SET NAMES 'utf8'"); //Para que se muestren las tildes correctamente
-		
+
     	for($i=0; $i<$this->cuentaReg; $i++){
    
-    		$sql2 = "INSERT INTO `INFOAUDITORIA`(`CUENTA`, `CENTRO_TRABAJO`, `CEDULA`, `ACTIVO`, `CONTCC`, `CONTSC`, `CONTSSC`, `CONTSSSC`, `CONTDES`, `CONTFECHADQ`, `CONTFACTURA`, `CONTCOSTO`, `CONTORIGBIEN`, `CONTASADEP`, `CONTFECHCAP`, `CONTFECHDEP`, `CONTPOLIZA`, `CONTREFALTAS`, `CONTREFBAJAS`, `CONTABONO`, `CONTFECHMOV`, `CONTDEPMEN`, `CONTDEPANUAL`, `CONTDEPACUM`, `CONTSALXDEP`, `CONTBAJADEP`, `CONTMESDEP`, `CONTFECHDETDEP`, `CONTFECHBAJA`) VALUES $arregloxd[$i]";  
-    		$result = mysqli_query($link, $sql2);
-                       
+    		$sql2 = "INSERT INTO INFOAUDITORIA (CUENTA, CENTRO_TRABAJO, CEDULA, ACTIVO, CONTCC, CONTSC, CONTSSC, CONTSSSC, CONTDES, CONTFECHADQ, CONTFACTURA, CONTCOSTO, CONTORIGBIEN, CONTASADEP, CONTFECHCAP, CONTFECHDEP, CONTPOLIZA, CONTREFALTAS, CONTREFBAJAS, CONTABONO, CONTFECHMOV, CONTDEPMEN, CONTDEPANUAL, CONTDEPACUM, CONTSALXDEP, CONTBAJADEP, CONTMESDEP, CONTFECHDETDEP, CONTFECHBAJA ) VALUES $arregloxd[$i]";                          
+
+    		$stmt2 = oci_parse($this->con2, $sql2);
+			oci_execute($stmt2);
 
 			//echo $sql2."<br><br><br><br>";
     	}

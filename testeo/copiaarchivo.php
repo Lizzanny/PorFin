@@ -286,7 +286,7 @@ class Cedulas extends ClaseTesteo{
         ORDER BY 2,3"; 
         $stmt = oci_parse($co, $sql);
         oci_execute($stmt);//Se ejecuta directo la consulta, ya que no hay parámetros
-        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){//recomerremos una a una las filas obtenidas
+        for ($i=0; $row =  oci_execute($stmt); oci_execute($stmt); oci_execute($stmt);; $i++){//recomerremos una a una las filas obtenidas
             if(!isset($row["CONTFECHADQ"])){
                 $FECHADQ=null;
             }else{
