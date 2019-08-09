@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>PORTAL DE INFORMACIÓN FINANCIERA - INTEGRACÓN CONTABLE PARA AUDITORES</title>
+    <title>PORTAL FINANCIERO - REPORTES</title>
     <link rel="icon" type="image/png" href="../Libs/image/ICON.png" />
-
    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
@@ -34,7 +33,7 @@
         <!-- Sidebar  -->
         <?php 
           include '../Main/main.php';
-          //include '../Libs/conexionOracle.php';
+          include '../Libs/conexionOracle.php';
         ?>
 
         <!-- Page Content  -->
@@ -44,33 +43,14 @@
             include '../Main/head.php'; 
             ?>
         </div>
-        <div id="content" style="margin-top: 10%; margin-left:0; width: 100%;">
+        <div id="content" style="margin-top: 6%; margin-left:0; width: 100%; ">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <h2 class="text-center text-uppercase">Disponibilidad de la información</h2>
+                    <h3 class="text-center text-uppercase">Integración contable para auditores</h3>
                 </div>
             </div>
-            <div class="row">
-                <div id="cuadro1" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="tablita table-responsive col-xs-12 col-sm-12 col-md-12 col-lg-12" >      
-                        <table id="usuarios" class="table table-bordered table-condensed" width="90%">
-                            <thead>
-                                <tr>   
-                                    <th>#</th>             
-                                    <th>CLAVE CT</th>
-                                    <th>NOMBRE CT</th>
-                                    <th>STATUS</th>
-                                    <th>SELECCION </th>
-                                </tr>
-                            </thead>                    
-                        </table>
-                    </div>          
-                </div>  
-            </div>
-        
-        </div>
-        <div>
-            <?php include 'php/modalAlert.php'; ?>
+            <iframe src="" height="100%" width="100%">reporte en birt</iframe>
+           
         </div>
     </div>
 
@@ -79,15 +59,13 @@
     <script src="../Libs/js/mainfunction.js"> </script>
     
     <script src="../Libs/js/jquery-1.12.3.js" ></script>
-    <script src="js/disponibilidad.js"></script>
-
     <script src="../Libs/DataTables/pdfmake/pdfmake.min.js"></script>
     <script src="../Libs/DataTables/pdfmake/vfs_fonts.js"></script>
     <script src="../Libs/DataTables/JSZip/jszip.min.js"></script>
     <script src="../Libs/DataTables/datatables.min.js"></script>
     <script src="../Libs/js/bootstrap.min.js"></script>
     <script src="../Libs/alertifyjs/alertify.min.js"></script>
-
+    <script src="../Reportes/js/operaciones.js"></script>
     
 </body>
 
