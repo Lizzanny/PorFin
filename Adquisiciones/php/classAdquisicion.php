@@ -14,12 +14,14 @@ include_once '../../Libs/ConexionOracle.php';
 
 class Adquisiciones extends ConexionOracle{
 
-	private $anio=2018;
+	private $anio=2017;
 	private $altasAqui=0; 
 	private $bajasAqui=0;
 	private $conexbase=0; 
 	private $nomcentrotrabajo='';
+	private $mensaje='';
 	private $errorproc=''; 
+	private $existen=0; //registros existentes 
 
 	//construtor
 	function __construct($anio){
@@ -84,14 +86,52 @@ class Adquisiciones extends ConexionOracle{
 	}
 
 
+	/* Verifica si existe datos del centro de trabajo en la tabla de adquisiciones */
+	
+	private function getExisteCentroTrabajoAdqui($cvect){
+		$numregistro=0;  $mensaje="No existe registros para el centro de trabajo $cvect";  $datos=array(); 
+		$conexion=3; $valida=false; 
+
+		$sql="SELECT COUNT(*) AS REGISTOS FROM TAB_ALTASYBAJAS WHERE CONTCT =$cvect"; 
+		$stmt = oci_parse($this->con2, $sql);
+        oci_execute($stmt);
+        $row = oci_fetch_array($stmt, OCI_BOTH);
+        $numregistro=$row['REGISTOS'];
+        if($numregistro!=0){
+        	$mensaje="No se puede guardar la informacion ya que se duplicarian la informacion para el centro de trabajo $cvect"; 
+        	$conexion=2;
+        	$valida=true; 
+        }
+
+        $datos = array('valid' => $valida,
+        			   'msj' => $mensaje,
+        			   'row' =>  $numregistro,
+        			   'cone' =>  $conexion,
+        			  );
+
+        oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
+        unset($row); //eliminamos la fila para evitar sobrecargar la memoria
+        //echo json_encode($datos);
+        return $datos; 
+	}
+
+
 	//obtener informacion del centro de trabajo que se le pasa por parametro
 	public function getInfoConexCT($cveCentro){
 		$concvect= array();
-
-		$sql= "SELECT IP,SID,USUARIO,CLAVE,DB_INSTANCE,DB_NAME FROM C_DBLINKS WHERE CT_CLAVE=$cveCentro";
-		//echo "$sql";
-		$stmt = oci_parse($this->con2, $sql);
-        oci_execute($stmt);
+		$verifica =$this->getExisteCentroTrabajoAdqui($cveCentro); 
+		
+		//print_r($verifica);
+		if($verifica['valid']){//exite el centro de trabajo # en la tabla de adquisiciones
+			$this->mensaje=$verifica['msj'];
+			$this->conexbase=$verifica['cone'];
+			$this->existen=$verifica['row'];
+		}else{
+			/**/
+			$sql= "SELECT IP,SID,USUARIO,CLAVE,DB_INSTANCE,DB_NAME FROM C_DBLINKS WHERE CT_CLAVE=$cveCentro";
+			//echo "$sql";
+			$stmt = oci_parse($this->con2, $sql);
+	        oci_execute($stmt);
 
  			$row = oci_fetch_array($stmt, OCI_BOTH);
         	$host= trim($row["IP"]);
@@ -101,12 +141,12 @@ class Adquisiciones extends ConexionOracle{
             $this->nomcentrotrabajo= trim($row["DB_INSTANCE"]);
             //informacion en array
             $this->conexbase= $this->comprobarConexionCT($host,$base,$user,$pass);
-
-            $this->imprimirJsonData(); 																//IMPRIME INFORMACION
             //$concvect = array('cone' => $conex);
             oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
             unset($row); //eliminamos la fila para evitar sobrecargar la memoria
             //echo json_encode($concvect);
+		}
+		$this->imprimirJsonData(); 										//IMPRIME INFORMACION
 	}
 
 
@@ -227,18 +267,18 @@ class Adquisiciones extends ConexionOracle{
 							 'CONTCC' => (int)$row->CONTCC,
 							 'CONTSSC' => (int)$row->CONTSSC,
 							 'CONTSSSC' => (int)$row->CONTSSSC,
-							 'ACTNUMERO' => "'".$row->ACTNUMERO."'",
-							 'CONTDES' => "'".$row->CONTDES."'",
-							 'CONTMARCA' => "'".$row->CONTMARCA."'",
-							 'CONTMODELO' => "'".$row->CONTMODELO."'",
-							 'CONTSERIE' => "'".$row->CONTSERIE."'",							
-							 'CONTFECHCAP' => "'".$row->CONTFECHCAP."'",
-							 'CONTFACTURA' => "'".$row->CONTFACTURA."'",
+							 'ACTNUMERO' => "'".str_replace("'",'"',$row->ACTNUMERO)."'",
+							 'CONTDES' => "'".str_replace("'",'"',$row->CONTDES)."'",
+							 'CONTMARCA' => "'".str_replace("'",'"',$row->CONTMARCA)."'",
+							 'CONTMODELO' => "'".str_replace("'",'"',$row->CONTMODELO)."'",
+							 'CONTSERIE' => "'".str_replace("'",'"',$row->CONTSERIE)."'",							
+							 'CONTFECHCAP' => "'".str_replace("'",'"',$row->CONTFECHCAP)."'",
+							 'CONTFACTURA' => "'".str_replace("'",'"',$row->CONTFACTURA)."'",
 							 'CONTCOSTO' => floatval($row->CONTCOSTO),
 							 'CONTDEPACUM' => floatval($row->CONTDEPACUM),
 							 'TIPOMOV' => 1,
-							 'CTDESCRIP' => "'".$row->CTDESCRIP."'",
-							 'CCDES' => "'".$row->CCDES."'"
+							 'CTDESCRIP' => "'".str_replace("'","'",$row->CTDESCRIP)."'",
+							 'CCDES' => "'".str_replace("'","'",$row->CCDES)."'"
 							 );
 		}
 
@@ -289,6 +329,7 @@ class Adquisiciones extends ConexionOracle{
 		$stmt = $conn->prepare($sql);
 		$stmt->execute();
 
+
 		for ($i=0; $row = $stmt->fetch(PDO::FETCH_ASSOC); $i++) {
 			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
 			$numRando= $this->randondigitos(); 
@@ -299,18 +340,18 @@ class Adquisiciones extends ConexionOracle{
 							 'CONTCC' => (int)$row['CONTCC'],
 							 'CONTSSC' => (int)$row['CONTSSC'],
 							 'CONTSSSC' => (int)$row['CONTSSSC'],
-							 'HBNUMERO' => "'".$row['HBNUMERO']."'",
-							 'CONTDES' => "'".$row['CONTDES']."'",
-							 'CONTMARCA' => "'".$row['CONTMARCA']."'",
-							 'CONTMODELO' => "'".$row['CONTMODELO']."'",
-							 'CONTSERIE' => "'".$row['CONTSERIE']."'",
-							 'CONTFECHCAP' => "'".$row['CONTFECHCAP']."'",
-							 'CONTFACTURA' => "'".$row['CONTFACTURA']."'",
+							 'HBNUMERO' => "'".str_replace("'",'"',$row['HBNUMERO'])."'",
+							 'CONTDES' => "'".str_replace("'",'"',$row['CONTDES'])."'",
+							 'CONTMARCA' => "'".str_replace("'",'"',$row['CONTMARCA'])."'",
+							 'CONTMODELO' => "'".str_replace("'",'"',$row['CONTMODELO'])."'",
+							 'CONTSERIE' => "'".str_replace("'",'"',$row['CONTSERIE'])."'",
+							 'CONTFECHCAP' => "'".str_replace("'",'"',$row['CONTFECHCAP'])."'",
+							 'CONTFACTURA' => "'".str_replace("'",'"',$row['CONTFACTURA'])."'",
 							 'CONTABONO' => floatval($row['CONTABONO']),
 							 'CONTBAJADEP' => floatval($row['CONTBAJADEP']),
 							 'TIPOMOV' => 2,
-							 'CTDESCRIP' => "'".$row['CTDESCRIP']."'",
-							 'CCDES' => "'".$row['CCDES']."'"
+							 'CTDESCRIP' => "'".str_replace("'",'"',$row['CTDESCRIP'])."'",
+							 'CCDES' => "'".str_replace("'",'"',$row['CCDES'])."'"
 							 );
 		}
 
@@ -414,7 +455,9 @@ class Adquisiciones extends ConexionOracle{
 		$info = array('cone' => $this->conexbase,
 					  'alta' => $this->altasAqui,
 					  'baja' => $this->bajasAqui,
-					  'nomb' => $this->nomcentrotrabajo 
+					  'nomb' => $this->nomcentrotrabajo, 
+					  'msje' => $this->mensaje,
+					  'exit' => $this->existen
 					);
 	
 		echo json_encode($info);
@@ -424,7 +467,13 @@ class Adquisiciones extends ConexionOracle{
 
 
 }//myClassEnd
-	$ob = new Adquisiciones(2017);
+	if(isset($_POST['anio'])){
+		$anio=$_POST['anio']; 
+	}else{
+		$anio=2017; 
+	}
+		
+	$ob = new Adquisiciones($anio);
 	//$ob->getCuentas(); 
 	switch ($_POST['opcion']) {
 		case 'cargaListaCentroTrabajo':

@@ -11,6 +11,15 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+     <!-- Bootstrap CSS 
+    <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">-->
+    
+    <!-- CSS  propio-->
+    <link rel="stylesheet" href="../Libs/css/style4.css">
+
 
      <!-- Alertifyjs CSS -->
     <link rel="stylesheet" href="../Libs/alertifyjs/css/alertify.rtl.min.css">
@@ -45,44 +54,44 @@
 </head>
 
 <body>
-        <div>
-        <!--PARA INCORPORAR LA CABECERA DE IDENTIFICACIÓN DEL SISTEMA-->
-            <?php 
-                //include '../Main/main.php';
-                //include '../Main/head.php'; 
-            ?>
-        </div>
-
         
-       
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <h4 class="display-6">REPORTE DE ADQUISICIONES ALTAS BAJAS</h4>
-                 <p class="lead">Instrucciones para generar el reporte es necesario marcar la casilla de verificación de cada uno de los centros de trabajo este realizara un proceso interno que importara la información de ese dicho  centro de trabajo, después de haber completado este paso deberá darle clic en el botón de color verde.</p>
+                 <p class="lead">Instrucciones para generar el reporte es necesario marcar la casilla de verificación de cada uno de los centros de trabajo este realizara un proceso interno que importara la información de ese dicho  centro de trabajo, después de haber completado este paso deberá darle clic en el botón de color verde, seleccionar que tipo de reporte desea generar (maquinaria y equipo, mobiliario y quipo de oficina, equipo de transporte, equipo de computo, software).</p>
             </div>
             
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div align="center"><span id="cargargif"></span></div><!-- Cargar imagen gif XD -->
-            
-            <button type="button" class="btn btn-danger" onclick="eliminadoContenidoTabla()">Eliminar <i class="fas fa-eraser"></i></button>&nbsp;&nbsp; 
-        
-            <!-- Example single danger button -->
-            <div class="btn-group">
-              <button type="button" class="btn btn-success dropdown-toggle btn-block" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Excel
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="#" onclick="importaInformacion(1208,'MAQUINARIA Y EQUIPO')">MAQUINARIA Y EQUIPO</a>
-                <a class="dropdown-item" href="#" onclick="importaInformacion(1212,'MOBILIARIO Y EQUIPO DE OFICINA')">MOBILIARIO Y EQUIPO DE OFICINA</a>
-                <a class="dropdown-item" href="#" onclick="importaInformacion(1216,'EQUIPO DE TRANSPORTE')">EQUIPO DE TRANSPORTE</a>
-                <a class="dropdown-item" href="#" onclick="importaInformacion(1220,'EQUIPO DE COMPUTO')">EQUIPO DE COMPUTO</a>
-                <a class="dropdown-item" href="#" onclick="importaInformacion(1228,'SOFTWARE')">SOFTWARE</a>
-                
-                <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">TODA LA INFORMACION</a>
-              </div>
+                <div align="center"><span id="cargargif"></span></div><!-- Cargar imagen gif XD -->
             </div>
+
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <button type="button" class="btn btn-danger btn-block" onclick="eliminadoContenidoTabla()">Eliminar <i class="fas fa-eraser"></i></button>&nbsp;&nbsp; 
+            </div>
+
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <select class="form-control btn-block" id="anio">
+                    <option selected>2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                </select>
+            </div>
+
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                <!-- Example single danger button -->
+                <div class="btn-group btn-block">
+                  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Excel
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" onclick="importaInformacion(1208,'MAQUINARIA Y EQUIPO')">MAQUINARIA Y EQUIPO</a>
+                    <a class="dropdown-item" href="#" onclick="importaInformacion(1212,'MOBILIARIO Y EQUIPO DE OFICINA')">MOBILIARIO Y EQUIPO DE OFICINA</a>
+                    <a class="dropdown-item" href="#" onclick="importaInformacion(1216,'EQUIPO DE TRANSPORTE')">EQUIPO DE TRANSPORTE</a>
+                    <a class="dropdown-item" href="#" onclick="importaInformacion(1220,'EQUIPO DE COMPUTO')">EQUIPO DE COMPUTO</a>
+                    <a class="dropdown-item" href="#" onclick="importaInformacion(1228,'SOFTWARE')">SOFTWARE</a>
+                  </div>
+                </div>
             </div>
         </div>
         
@@ -93,28 +102,53 @@
                     <table id="tablatemporal" class="table table-bordered table-hover" cellspacing="0" width="100%">
                         <thead class="thead-light">
                             <tr>
-                                <th>CT</th>
-                                <th>CEDULA NUM</th>
-                                <th>CTA.</th>
-                                <th>SSC</th>
-                                <th>SSSC</th>
-                                <th>ACTIVO NÚMERO</th>
-                                <th>DESCRIPCIÓN</th>
-                                <th>MARCA</th>
-                                <th>MODELO</th>
-                                <th>SERIE</th>
-                                <th>FECHA DE ADQUISICIÓN</th>
-                                <th>FACTURA</th>
-                                <th>VALOR DE ADQUIISICIÓN</th>
-                                <th>DEPRECIACIÓN ACUMULADA</th>
+                                <th>ID</th>
+                                <th>CONTCT</th>
+                                <th>CONTNUM</th>
+                                <th>CONTCC</th>
+                                <th>CONTSSC</th>
+                                <th>CONTSSSC</th>
+                                <th>HBNUMERO</th>
+                                <th>CONTDES</th>
+                                <th>CONTMARCA</th>
+                                <th>CONTMODELO</th>
+                                <th>CONTSERIE</th>
+                                <th>CONTFECHCAP</th>
+                                <th>CONTFACTURA</th>
+                                <th>CONTABONO</th>
+                                <th>CONTBAJADEP</th>
+                                <th>TIPOMOV</th>
+                                <th>CTDESCRIP</th>
+                                <th>CCDES</th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>CONTCT</th>
+                                <th>CONTNUM</th>
+                                <th>CONTCC</th>
+                                <th>CONTSSC</th>
+                                <th>CONTSSSC</th>
+                                <th>HBNUMERO</th>
+                                <th>CONTDES</th>
+                                <th>CONTMARCA</th>
+                                <th>CONTMODELO</th>
+                                <th>CONTSERIE</th>
+                                <th>CONTFECHCAP</th>
+                                <th>CONTFACTURA</th>
+                                <th>CONTABONO</th>
+                                <th>CONTBAJADEP</th>
+                                <th>TIPOMOV</th>
+                                <th>CTDESCRIP</th>
+                                <th>CCDES</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 
     <script src="../Libs/js/jquery-3.3.1.js"></script>
@@ -132,9 +166,11 @@
     <script src="../Libs/DataTables/JSZip/jszip.min.js"></script>
     <script src="../Libs/DataTables/datatables.min.js"></script>
     
+    
     <script>
         $(document).ready(function() {
-            console.log( "ready!" );
+            //console.log( "ready!" );
+           
             getListaCentroTrabajo();
             alertify.set('notifier','position', 'top-right');
         }); 
@@ -157,6 +193,9 @@
                 }).done(function(res) {
                     if(res.elim==1){
                         alertify.success(res.mesj,5);
+                            setTimeout(function(){
+                               location.reload();//recargar pagina
+                            }, 1500);   
                         //$('#detalleAvales').DataTable().ajax.reload();
                     }if(res.elim==0){
                         alertify.error(res.mesj,5); 
@@ -178,7 +217,8 @@
             url: 'php/classAdquisicion.php',
             type: 'POST',
             dataType: 'html',
-            data: {'opcion': 'cargaListaCentroTrabajo'},
+            data: {'opcion': 'cargaListaCentroTrabajo'
+                  },
             })
             .done(function(res) {
                 $("#tablacentrotrabajo").html(res);
@@ -197,37 +237,48 @@
 
             const rojo='#ea1d31';
             const verde='#51c26f';
+            const naranja='#ff7f5d';
             var idsemaforo= '#semaforo'+cve;
-
-            if(cve!=''){
+            var anio = $("#anio").val();             console.log(anio);
+           
+           /**/
+            if(cve!='' || anio!=''){
                 $.ajax({
                     url: 'php/classAdquisicion.php',
                     type: 'POST',
                     dataType: 'json',
                     data: {'opcion': 'informacionCentroTrabajo',
-                           'cvect': cve},
+                           'cvect': cve,
+                           'anio': anio},
                 })
                     .done(function(res) {
                         console.log("success");
                         if(res.cone==1){
                             $(idsemaforo).css('background-color', verde);
-                            alertify.success('<strong>!Exito</strong> se proceso correctamente: '+res.nomb,5);
-                            $("#cargargif").html("<p>Numero de altas:  numero de bajas:  Centro de Trabajo: <p>");
+                            alertify.success('<strong>!Exito</strong> Se proceso correctamente: '+res.nomb,5);
+                            $("#cargargif").html("<small>N° Altas: "+res.alta+"   N° Bajas: "+res.baja+"   Centro de Trabajo: "+res.nomb+" <small>");
                         }
                         if(res.cone==0){
                             $(idsemaforo).css('background-color', rojo);
-                            alertify.error('!Error en la base de datos procesar de manera manual: '+res.nomb,5);
-                            $("#cargargif").html("<p>Numero de altas:  numero de bajas:  Centro de Trabajo: <p>");
+                            alertify.error('!Error al intentar realizar la conexion: '+res.nomb,5);
+                            $("#cargargif").html("<small>Error de conexión para el centro de trabajo: "+res.nomb+". Mas información consulte al administrador del sistema.<small>");
+                        }
+                        if(res.cone==2){
+                            $(idsemaforo).css('background-color', naranja);
+                            alertify.warning(res.msje);
+                            $("#cargargif").html("<small>Numero de registros existentes : "+res.exit+"</small><br><small>"+res.msje+"</small>");
                         }
                         console.log(res);
                     })
                     .fail(function() {
-                        console.log("error");
+                        console.log("error check");
+                          alertify.error('!Error .................................................' ,5);
+                        $("#cargargif").html("<small>Error al obtener la información del centro de trabajo: "+cve+", favor de consultar al administrador del sistema</small>");
                     })
                     .always(function() {
-                        console.log("complete");
+                        console.log("complete check");
                     });
-            }  
+            } /**/  
         }
 
 
