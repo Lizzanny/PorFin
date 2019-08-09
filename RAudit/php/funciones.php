@@ -188,10 +188,10 @@ private $CONTFECHBAJA = array();
     }
 
     public function VaciarTab(){
-        $sql2 = "DELETE FROM INFOAUDITORIA"; 
-        $stmt2 = oci_parse($this->con2, $sql2);
-        oci_execute($stmt2);
-        $ok = oci_num_rows($stmt2);
+        $sql3 = "DELETE FROM INFOAUDITORIA"; 
+        $stmt3 = oci_parse($this->con2, $sql3);
+        oci_execute($stmt3);
+        $ok = oci_num_rows($stmt3);
         if($ok!=0){
             $msj = '¡Exito! La tabla de integración contable esta vacia..';
             $opc = 1;

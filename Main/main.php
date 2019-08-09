@@ -98,6 +98,8 @@ if($rol == 'RFINCONTABLE' || $rol=='RFINADM'){ ?>
                 <li><a href="../EdoFin/estadoFin.php">Estado de situación financiera</a></li>
                 <li><a href="#">Cedula financiera a cuenta 1117</a></li>
                 <li><a data-toggle='modal' data-target='#generar'>Saldos de activo fijo por cuenta y Centro de costos</a></li>
+                <li><a href="../RAudit/TableRepor.php">Integración contable para auditores</a></li>
+                <li><a href="../Adquisiciones/index.php">Libro de inventarios y balances</a></li>
             </ul>
         </li>
 <?php } 

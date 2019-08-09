@@ -80,7 +80,7 @@
     
     <script src="../Libs/js/jquery-1.12.3.js" ></script>
     <script src="js/disponibilidad.js"></script>
-
+    <script src="js/ops.js"></script>
     <script src="../Libs/DataTables/pdfmake/pdfmake.min.js"></script>
     <script src="../Libs/DataTables/pdfmake/vfs_fonts.js"></script>
     <script src="../Libs/DataTables/JSZip/jszip.min.js"></script>
