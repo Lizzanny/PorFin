@@ -7,6 +7,8 @@
 
 	<!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
+
+    <!-- Data CSS -->
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
 

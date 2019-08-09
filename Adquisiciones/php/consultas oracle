@@ -1,3 +1,19 @@
+
+
+for ($i=0; $i <$this->totalregist; $i++) { 
+			for ($j=0; $j <18; $j++) { 
+				$hoja->setCellValueByColumnAndRow(($i+1),$j,$dt[$i][$j]);
+			}
+		}
+
+
+//$hoja->setCellValueByColumnAndRow(1, 1,$titCol[0]);
+		//$hoja->setCellValueByColumnAndRow(2, 1,$titCol[1]);
+		//$hoja->setCellValueByColumnAndRow(3, 1,$titCol[2]);
+		//$hoja->setCellValueByColumnAndRow(4, 1,$titCol[3]);
+
+
+
 SELECT CE.CONTCT
 ,CE.CONTNUM
 ,CE.CONTCC
@@ -81,3 +97,14 @@ SELECT CE.CONTCT
 		CE.CONTCT =A.CONTCT(+) AND
 		CE.CONTNUM=A.CONTNUM(+)
 		ORDER BY CE.CONTCT,CE.CONTNUM,CE.CONTSSC,CE.CONTSSSC;
+
+
+
+ $this->IniciarConexion2PDO("PORFINAN","porfinan","172.30.10.98","actfij");
+private function IniciarConexion2PDO($host,$daba,$user,$pass){
+            try{
+                $conexion= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
+            }catch(PDOException $e){
+                 echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
+            }
+        }

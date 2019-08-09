@@ -28,7 +28,7 @@ class Adquisiciones extends ConexionOracle{
 	}
 	//imagenes escritorio remoto de recuroos humanos
 	//carpeta-> que se llame  remotamente 193.0.0.45
-	//c: rh/2000/fotos/210/foto9308
+	//c: rh/2000/fotos/210/foto9308   //chavo picho omar
 	// $ncols = oci_num_fields($stid);
 	public function getListaCT(){
 		//$listact=array();
@@ -39,11 +39,10 @@ class Adquisiciones extends ConexionOracle{
         $tablact.='<table class="table-hover table-bordered">
                         <thead>
                             <tr>
-                            	<th width="10%">N°</th>
-                             	<th width="20%">Clave</th>
-                                <th width="35%">Centro de Trabajo</th>
-                                <th width="20%">Verificar</th>
-                                <th width="15%">Semaforo</th>
+                            	<th width="5%">N°</th>
+                                <th width="70%">Centro de Trabajo</th>
+                                <th width="10%">Obten</th>
+                                <th width="15%">Luz</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -54,8 +53,7 @@ class Adquisiciones extends ConexionOracle{
         	$idsema='semaforo'.$cvect;
         		$tablact.=" <tr>
         						<td>".($i+1)."</td>
-        						<td align='center'>".$cvect."</td>
-                                <td>".$row['DB_INSTANCE']."</td>
+                                <td>($cvect) ".$row['DB_INSTANCE']."</td>
                                 <td align='center'><input class='form-check-input position-static checkbox-1x' type='checkbox' onclick='checarevento($cvect)'></td>
                                 <td id='$idsema'></td>
                             </tr>";
@@ -104,7 +102,7 @@ class Adquisiciones extends ConexionOracle{
             //informacion en array
             $this->conexbase= $this->comprobarConexionCT($host,$base,$user,$pass);
 
-            //$this->imprimirJsonData(); 																//IMPRIME INFORMACION
+            $this->imprimirJsonData(); 																//IMPRIME INFORMACION
             //$concvect = array('cone' => $conex);
             oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
             unset($row); //eliminamos la fila para evitar sobrecargar la memoria
@@ -201,7 +199,7 @@ class Adquisiciones extends ConexionOracle{
 		,CE.CONTMARCA
 		,CE.CONTMODELO
 		,CE.CONTSERIE
-		,CE.CONTFECHCAP
+		,TO_CHAR (TO_DATE(CE.CONTFECHCAP,'DD/MM/RR'), 'DD/MM/RR') CONTFECHCAP
 		,CE.CONTFACTURA
 		,CE.CONTCOSTO
 		,CE.CONTDEPACUM
@@ -220,7 +218,7 @@ class Adquisiciones extends ConexionOracle{
 		$stmt->execute();
 
 		for ($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) {
-			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP); 
+			//$formFecha= $this->formatearFechaDiaMesAnio($row->CONTFECHCAP);  //'CONTFECHCAP' => "'".$formFecha."'",
 			$numRando= $this->randondigitos(); 
 			$datoAlta[$i]= array(
 							 'ID' =>$numRando,
@@ -233,8 +231,7 @@ class Adquisiciones extends ConexionOracle{
 							 'CONTDES' => "'".$row->CONTDES."'",
 							 'CONTMARCA' => "'".$row->CONTMARCA."'",
 							 'CONTMODELO' => "'".$row->CONTMODELO."'",
-							 'CONTSERIE' => "'".$row->CONTSERIE."'",
-							 //'CONTFECHCAP' => "'".$formFecha."'",
+							 'CONTSERIE' => "'".$row->CONTSERIE."'",							
 							 'CONTFECHCAP' => "'".$row->CONTFECHCAP."'",
 							 'CONTFACTURA' => "'".$row->CONTFACTURA."'",
 							 'CONTCOSTO' => floatval($row->CONTCOSTO),
@@ -250,7 +247,7 @@ class Adquisiciones extends ConexionOracle{
 		//ver informacion del json
 		//echo json_encode($datoAlta); 
 		$this->altasAqui= sizeof($datoAlta);
-		//$this->insertarTablaTemporal($datoAlta,1); 
+		$this->insertarTablaTemporal($datoAlta,1); 
 	}
 
 
@@ -319,9 +316,9 @@ class Adquisiciones extends ConexionOracle{
 
 		$stmt = null;//cerrar consulta
 		$conn = null;//cerrar  conexion
-		echo json_encode($datoBaja); 
+		//echo json_encode($datoBaja); 
 		$this->bajasAqui= sizeof($datoBaja);
-		//$this->insertarTablaTemporal($datoBaja,0); 
+		$this->insertarTablaTemporal($datoBaja,0); 
 	}
 
 //ACTNUMERO, //CONTDEPACUM, //CONTCOSTO,
@@ -381,14 +378,33 @@ class Adquisiciones extends ConexionOracle{
 				".$item[$i]['TIPOMOV'].",
 				".$item[$i]['CTDESCRIP'].",".$item[$i]['CCDES'].")";
 				
-				echo "$sql <br><br><br>";
-				//$stid = oci_parse($this->con2,$sql);
-				//oci_execute($stid);
-				//oci_free_statement($stid); 
+				//echo "$sql <br><br><br>";
+				$stid = oci_parse($this->con2,$sql);
+				oci_execute($stid);
+				oci_free_statement($stid); 
 			}
-			//oci_commit($this->con2);  // consolida todos los nuevos valores: 1, 2, 3, 4, 5
+			oci_commit($this->con2);  // consolida todos los nuevos valores: 1, 2, 3, 4, 5
 		}
-		
+	}
+
+
+	public function eliminarDatosTablaAltasBajas(){
+		$elimino=0; 
+		$mensaje="<strong>!Error</strong> No se pudo eliminar la tabla de altas y bajas de adquisiciones. Solicite ayuda con el administrador."; 
+		$sql= "DELETE FROM TAB_ALTASYBAJAS";
+		$stmt = oci_parse($this->con2, $sql);
+        $ok = oci_execute($stmt);
+		oci_free_statement($stmt);//libera todos los recursos asociados con la instrucción o el cursor
+
+		if($ok){
+			$elimino=1; 
+			$mensaje="<strong>!Éxito</strong> el contenido de la tabla altas y bajas adquisiciones fue eliminado satisfactoriamente. ";
+		}
+		echo json_encode(
+				array('elim' => $elimino,
+					  'mesj' => $mensaje)
+			);
+
 	}
 
 
@@ -417,6 +433,10 @@ class Adquisiciones extends ConexionOracle{
 
 		case 'informacionCentroTrabajo':
 			$ob->getInfoConexCT($_POST['cvect']);
+			break;
+
+		case 'eliminarDatosTabla':
+			$ob->eliminarDatosTablaAltasBajas(); 
 			break;
 
 		default:
