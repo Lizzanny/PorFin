@@ -11,7 +11,7 @@
       <div class="modal-body">
         <div class="container-fluid">
           <div class="alert alert-warning" role="alert">
-            Al ser recargada la pagina los datos ya almacenados se pierden.
+            Al ser recargada la página se reiniciarán los semaforos mas sin embargo la información anteriormente trabajada ya se encuentra registrada.
           </div>
         </div>
         

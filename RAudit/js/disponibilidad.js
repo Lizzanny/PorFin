@@ -21,7 +21,7 @@ var listar = function(){
 		],
 		"language": idioma_espanol,
 		"dom": 
-		"<'row'<'offset-sm-12 offset-md-12'B>>" +
+		"<'row'<'offset-sm-4 offset-md-4'B>>" +
 		"<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-12'f>>" +
 		"<'row'<'col-sm-12'tr>>" +
 		"<'row'<'col-sm-12 col-md-12'i><'col-sm-12 col-md-12'p>>",
@@ -31,8 +31,18 @@ var listar = function(){
 				titleAttr: "Exportar",
 				className: "btn btn-dark",
 				action: function() {
-            		console.log(arregloxd);
+					window.location='php/raux.php';  
+            		//window.location.href = '../repof/Auditorias.php';
         		}
+			},
+			{
+				text: "<i class='fas fa-trash-restore'></i>",
+				titleAttr: "Vaciar",
+				className: "btn btn-danger",
+				action: function() {
+					getCT();
+            		
+				}
 			}
 		]
 	});
@@ -106,4 +116,3 @@ function almacena(clave){
 //console.log(arregloxd);
 }
 
-		
