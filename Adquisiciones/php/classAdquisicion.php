@@ -9,8 +9,8 @@
  *  Modificacion:
  *
  */
-//https://docs.oracle.com/cd/B19306_01/server.102/b14237/initparams122.htm#REFRN10119
-include_once '../../Libs/ConexionOracle.php';
+include '../../Libs/conexionOracle.php';
+
 
 class Adquisiciones extends ConexionOracle{
 
@@ -28,10 +28,7 @@ class Adquisiciones extends ConexionOracle{
 		$this->anio=$anio;
 		parent::__construct();
 	}
-	//imagenes escritorio remoto de recuroos humanos
-	//carpeta-> que se llame  remotamente 193.0.0.45
-	//c: rh/2000/fotos/210/foto9308   //chavo picho omar
-	// $ncols = oci_num_fields($stid);
+	
 	public function getListaCT(){
 		//$listact=array();
 		$tablact='';
@@ -87,7 +84,6 @@ class Adquisiciones extends ConexionOracle{
 
 
 	/* Verifica si existe datos del centro de trabajo en la tabla de adquisiciones */
-	
 	private function getExisteCentroTrabajoAdqui($cvect){
 		$numregistro=0;  $mensaje="No existe registros para el centro de trabajo $cvect";  $datos=array(); 
 		$conexion=3; $valida=false; 
@@ -98,7 +94,7 @@ class Adquisiciones extends ConexionOracle{
         $row = oci_fetch_array($stmt, OCI_BOTH);
         $numregistro=$row['REGISTOS'];
         if($numregistro!=0){
-        	$mensaje="No se puede guardar la informacion ya que se duplicarian la informacion para el centro de trabajo $cvect"; 
+        	$mensaje="<strong>Advertencia</strong> este centro de trabajo $cvect ya se encuentra registrado en la tabla adquisición la información se duplicaría si se guarda, si desea más información acudir con el administrador del sistema."; 
         	$conexion=2;
         	$valida=true; 
         }
@@ -116,8 +112,9 @@ class Adquisiciones extends ConexionOracle{
 	}
 
 
-	//obtener informacion del centro de trabajo que se le pasa por parametro
-	public function getInfoConexCT($cveCentro){
+	//obtener informacion del centro de trabajo que se le pasa por parametro 
+	//el anio se validara bueno si se desea realizar un historial podria validar si se necesita 
+	public function getInfoConexCT($cveCentro,$anio){
 		$concvect= array();
 		$verifica =$this->getExisteCentroTrabajoAdqui($cveCentro); 
 		
@@ -180,20 +177,7 @@ class Adquisiciones extends ConexionOracle{
 		return (int)$numrando;
 	}
 
-	//31/12/17 ---- 31/DIC/17  -----  31-DIC-2017 
-	public function formatearFechaDiaMesAnio($fechadb){
-		//$fecha = new DateTime($fechadb); 
-		//$fomfecha = $fecha->format("d-m-Y"); 	
 
-		//return $fomfecha; 
-	}
-
-	public function formatoFechaBaseDatos($fecha){
-		$sql= "SELECT TO_CHAR (TO_DATE('31/12/17','DD/MM/YYYY'), 'DD/MM/YYYY') AS FORMATOFECHA FROM DUAL";
-		$stid = oci_parse($this->con2,$sql);
-		oci_execute($stmt);
-		$row = oci_fetch_array($stmt, OCI_BOTH);
-	}
 
 	public function getConfiguracionNLS($conn){
 		$dataNls = array();
@@ -481,7 +465,7 @@ class Adquisiciones extends ConexionOracle{
 			break;
 
 		case 'informacionCentroTrabajo':
-			$ob->getInfoConexCT($_POST['cvect']);
+			$ob->getInfoConexCT($_POST['cvect'],$_POST['anio']);
 			break;
 
 		case 'eliminarDatosTabla':
