@@ -31,7 +31,8 @@ var listar = function(){
 				titleAttr: "Exportar",
 				className: "btn btn-dark",
 				action: function() {
-            		window.location.href = '../repof/Auditorias.php';
+					window.location='php/raux.php';  
+            		//window.location.href = '../repof/Auditorias.php';
         		}
 			},
 			{

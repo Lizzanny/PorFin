@@ -66,12 +66,12 @@ private $CONTFECHBAJA = array();
             $base= new PDO("oci:dbname=$host/$daba;charset=utf8", $user, $pass);
             $checar = $this->guardaTemp($host,$daba,$user,$pass);
             $base = null;
-            $checar=1;
+            //$checar=1;
         }catch(PDOException $e){
             		//echo "SE ENCONTRO EL SIGUINETE ERROR"+ $e->getMessage( );
             $checar=0;
         }
-      //  echo $checar; 
+        echo $checar; 
     }
 
     private function guardaTemp($host,$daba,$user,$pass){
