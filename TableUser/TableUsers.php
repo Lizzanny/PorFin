@@ -9,41 +9,32 @@
     <title>PORTAL DE INFORMACIÓN FINANCIERA - USUARIOS</title>
     <link rel="icon" type="image/png" href="../Libs/image/ICON.png" />
 
-   <!-- Bootstrap CSS -->
+   <!-- Bootstrap CSS 
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
-
-    <!-- CSS  propio-->
+-->
+    <!-- CSS  propio
     <link rel="stylesheet" href="../Libs/css/style4.css">
-
-    <!--dataTables-->
+-->
+    <!--dataTables
    
     <link rel="stylesheet" href="../Libs/css/tablestyle.css">
-    <!--Alertify-->
+    -->
+    <!--Alertify
     <link rel="stylesheet" href="../Libs/alertifyjs/css/alertify.min.css">
-    <!-- Font Awesome JS -->
+    -->
+    <!-- Font Awesome JS 
     <script defer src="../Libs/fontAwesome/js/solid.js" ></script>
     <script defer src="https://kit.fontawesome.com/b9fc8f6309.js"></script>
-
+-->
 
 </head>
 <body>
-
-    <div class="wrapper">
-        <!-- Sidebar  -->
-        <?php 
-          include '../Main/main.php';
-          include '../Libs/conexionOracle.php';
-        ?>
-
-        <!-- Page Content  -->
-        <div>
-        <!--PARA INCORPORAR LA CABECERA DE IDENTIFICACIÓN DEL SISTEMA-->
-            <?php 
-            include '../Main/head.php'; 
-            ?>
-        </div>
+<?php 
+    include '../Main/main.php';
+?>
+    <div class="container">
         <div id="content" style="margin-top: 10%; margin-left:0; width: 100%;">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
