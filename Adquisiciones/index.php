@@ -12,25 +12,25 @@
     <!-- Bootstrap CSS Online
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
     
-     <!-- Bootstrap CSS 
+     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
-    -->
-    <!-- CSS  propio 
+    
+    <!-- CSS  propio -->
     <link rel="stylesheet" href="../Libs/css/style4.css"> 
--->
 
 
-     <!-- Alertifyjs CSS 
+
+     <!-- Alertifyjs CSS -->
     <link rel="stylesheet" href="../Libs/alertifyjs/css/alertify.rtl.min.css">
     <link rel="stylesheet" href="../Libs/alertifyjs/css/themes/bootstrap.min.css">
-    -->
+    
 
-      <!-- Font Awesome JS 
+      <!-- Font Awesome JS -->
     <script defer src="../Libs/fontAwesome/js/solid.js" ></script>
     <script defer src="https://kit.fontawesome.com/b9fc8f6309.js"></script>
--->
+
 
     <!-- DataTables CSS
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
@@ -48,7 +48,6 @@
           background-color: #68132e;
           color: white;
         }
-
         .checkbox-1x {
                 transform: scale(1.3);
                 -webkit-transform: scale(1.3);
@@ -61,20 +60,29 @@
 </head>
 
 <body>
-    <?php 
-        include '../Main/main.php';
-    ?>
+    
     <!-- INCLUDE CODIGO DE VIVIANA -->
-    <div class="container">
-        <div id="content" style="margin-top: 3%; margin-left:0; width: 100%;">
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <?php 
+          include '../Main/main.php';
+          //include '../Libs/conexionOracle.php';
+        ?>
+
+        <!-- Page Content  -->
+        <div>
+        <!--PARA INCORPORAR LA CABECERA DE IDENTIFICACIÓN DEL SISTEMA-->
+            <?php 
+            include '../Main/head.php'; 
+            ?>
+        </div>
+        <div id="content" style="margin-top: 10%; margin-left:0; width: 100%;">
     <!-- FIN DEL CODIGO DE VIVIANA -->
 
     <div class="container-fluid">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <h3 class="text-center text-uppercase">REPORTE DE ADQUISICIONES ALTAS BAJAS</h3>
-        </div>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <h4 class="display-6">REPORTE DE ADQUISICIONES ALTAS BAJAS</h4>
                 <!-- ACORDION -->
                     <div class="accordion" id="accordionAdquisi">
                       <div class="card">
@@ -88,14 +96,14 @@
 
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionAdquisi">
                           <div class="card-body">
-                            <p><strong>Instrucciones</strong>: Para generar el reporte de adquisiciones es necesario seleccionar el año para el que desea obtener la información, después marcar cada una de las casillas de verificación de los centros de trabajo. Al hacer clic sobre cada casilla se desplegará una barra de progreso indicando la carga de la información y enseguida se mostrará un semáforo que marca los siguientes status:</p>
+                            <p><strong>Instrucciones</strong>: para generar el reporte de adquisiciones es necesario seleccionar el año en el que desea obtener la información después marcar cada una de las casillas de verificación de los centros de trabajo. Al realizar clic sobre dicha casilla se desplegara barra de progreso indicando la carga de la información y seguido se mostrara un semáforo que marca los siguientes status:</p>
                                 <ul>
-                                    <li>Verde: La información se ha completado exitosamente.</li>
-                                    <li>Naranja: Está intentando duplicar la información que ya se encuentra registrada esto no es posible realizar.</li>
-                                    <li>Rojo: : Indica que el servidor de la base de datos a la que se desea conectar no se encuentra disponible o se ha cambiado el usuario o contraseña.</li>
+                                    <li>Verde: la información se ha completado exitosamente.</li>
+                                    <li>Naranja: está intentando duplicar la información que ya se encuentra registrada esto no es posible realizar.</li>
+                                    <li>Rojo: : indica que el servidor de la base de dato al que se desea conectar no se encuentra disponible o que se hayan cambiado el usuario o contraseña.</li>
                                 </ul>
 
-                            <p>El botón de color verde genera un reporte en formato Excel. Al dar clic sobre dicho botón, se desplegara las siguientes opciones:</p>
+                            <p>El botón de color verde realiza un reporte en formato Excel. Al dar clic sobre dicho botón, se desplegara las siguientes opciones:</p>
                             <ul>
                                 <li>Maquinaria y equipo</li>
                                 <li>Mobiliario y equipo de oficina</li>
@@ -106,7 +114,7 @@
                                  
                             <p>Seleccione cualquiera de estas opciones y en la parte inferior se descargara un archivo Excel con la información que selecciono previamente.</p>
 
-                            <p>Al hacer clic sobre el botón de color rojo se mostrara un mensaje de confirmación para limpiar (Eliminar) toda la información de la tabla de paso. Esto con el fin de que pueda volver a realizar todo el proceso después de cada año.</p>
+                            <p>Al dar clic sobre el botón de color rojo se mostrara un mensaje de confirmación para limpiar (Eliminar) toda la información de la tabla de paso. Esto con el fin de que pueda volver a realizar todo el proceso después de cada año.</p>
 
                           </div>
                         </div>
@@ -115,13 +123,13 @@
                         <div class="card-header" id="headingTwo">
                           <h2 class="mb-0">
                             <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                              Dudas o sugerencias 
+                              Duda o sugerencias 
                             </button>
                           </h2>
                         </div>
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionAdquisi">
                           <div class="card-body">
-                            Favor de comunicarse a la siguiente extensión 62271.
+                            Duda o sugerencias favor de comunicarse a la siguiente extensión 62271  62268
                           </div>
                         </div>
                       </div>
@@ -203,14 +211,12 @@
             getListaCentroTrabajo();
             alertify.set('notifier','position', 'top-right');
         }); 
-
         function importaInformacion(cve,nom){
             alertify.success('procesando....');
             setTimeout(function(){
             window.open('php/reportecsv.php?clave='+cve+'&nombre='+nom,'_blank');
             }, 1500);
         }
-
         function eliminadoContenidoTabla(){
         alertify.confirm('Eliminar el contenido de la tabla adquisiciones', '¿Esta seguro que desea vaciar la tabla de adquisiciones?, si vacía el contenido tendrá que seleccionar cada uno de los centro de trabajo y el año nuevamente .Confirmar mensaje', 
             function(){
@@ -238,9 +244,6 @@
                 alertify.error('Proceso cancelado.'); 
             }); 
         }
-
-
-
         function getListaCentroTrabajo(){
             $.ajax({
             url: 'php/classAdquisicion.php',
@@ -260,10 +263,8 @@
             });
         }  
         
-
         function checarevento(cve){
             $("#cargargif").html("<img src='../Libs/image/cargando.gif'>"); 
-
             const rojo='#ea1d31';
             const verde='#51c26f';
             const naranja='#ff7f5d';
@@ -309,12 +310,8 @@
                     });
             } /**/  
         }
-
-
-
         
         
-
     </script>
     
 </html>

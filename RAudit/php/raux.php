@@ -9,11 +9,14 @@ class RaUx extends ConexionOracle{
 	}
 
 	public function obtnerDatosUsuari(){
+		$uploaddir="/home/desarrollo/web/portalfinanciero.liconsa.gob.mx/public_html/docutmp/"; 
+		$nombre_fichero_tmp = tempnam($uploaddir, "FOO");
+
 		$query = 'SELECT * FROM ACTFIJ.INFOAUDITORIA ORDER BY CENTRO_TRABAJO, CUENTA, CEDULA ASC';
 		$stid = oci_parse($this->con2, $query);
 		oci_execute($stid);
 		
-		$myfile=fopen("myFile","w") or die("Unable to open File");
+		$myfile=fopen($nombre_fichero_tmp,"w") or die("Unable to open File");
 		
 		$columns_total = oci_num_fields($stid);
 		$output = "";
