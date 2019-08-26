@@ -31,7 +31,7 @@ a:focus {
     transition: all 0.3s;
 }
 
-.navbar {
+.navbar {/*CABECERA DEL SISTEMA*/
     font-family: Montserrat-Bold;
     padding: 10px 10px;
     background: #fff;
@@ -73,7 +73,7 @@ a:focus {
 
 i,
 span {
-    display: inline-block;
+    display: run-in;
 }
 
 #div1{
@@ -149,24 +149,24 @@ span {
     display: block;
 }
 
-#sidebar ul li a {
+#sidebar ul li a {/*alineacion normal del texto de las opciones del menu*/
     text-align: left;
 }
 
-#sidebar.active ul li a {
-    padding: 20px 15px;
-    text-align: left;
-    font-size: 0.85em;
+#sidebar.active ul li a {/**/
+    padding: 15px 15px 15px 15px;
+    text-align: center;
+    font-size: 0.7em;
 }
 
 #sidebar.active ul li a i {
     margin-right: 0;
     display: block;
-    font-size: 1.8em;
-    margin-bottom: 5px;
+    font-size: 20em;
+    margin-bottom: 2px;
 }
 
-#sidebar.active ul ul a {
+#sidebar.active ul ul a {/*Espacio entre las opciones*/
     padding: 10px !important;
 }
 
@@ -179,33 +179,33 @@ span {
     transform: translateX(50%);
 }
 
-#sidebar .sidebar-header {
-    padding: 15px;
+#sidebar .sidebar-header {/*NOMBRE DEL SISTEMA*/
+    padding: 10px;
     background: #4E232E;
 }
 
-#sidebar .sidebar-header strong {
+#sidebar .sidebar-header strong {/*NOMBRE DEL SISTEMA*/
     display: none;
-    font-size: 1.8em;
+    font-size: 0.7em;
 }
 
-#sidebar ul.components {
+#sidebar ul.components {/*Espacio entre el titulo del nombre del sistema y las opciones del menu*/
     padding: 20px 0;
 }
 
-#sidebar ul li a {
+#sidebar ul li a {/*links del menu*/
     padding: 10px;
-    font-size: 1.1em;
+    font-size: 1em;
     display: block;
 }
 
-#sidebar ul li a:hover {
+#sidebar ul li a:hover {/*Estilo de cambio cuando el cursor esta sobre la opcion*/
     background: #9D2449;
     border-bottom: 1px solid #D4C19C;
 }
 
-#sidebar ul li a i {
-    margin-right: 10px;
+#sidebar ul li a i {/*para el icono de la opcion*/
+    margin-right: 1000px;
 }
 
 #sidebar ul li.active>a,
@@ -227,8 +227,8 @@ a[data-toggle="collapse"] {
 }
 
 ul ul a {/*Espacio entre las opciones de cada dropdown*/
-    font-size: 0.9em !important;
-    padding-left: 30px !important;
+    font-size: 0.7em !important;
+    padding-left: 14px !important;
     background: #621132;
 }
 
@@ -296,13 +296,13 @@ a.article:hover {
         display: block;
     }
     #sidebar ul li a {
-        padding: 20px 10px;
+        padding: 10px 10px;
     }
     #sidebar ul li a span {
         font-size: 0.85em;
     }
     #sidebar ul li a i {
-        margin-right: 0;
+        margin-right: 10;
         display: block;
     }
     #sidebar ul ul a {

@@ -34,6 +34,7 @@ class RaUx extends ConexionOracle{
 		}
 		oci_free_statement($stid);
 		oci_close($this->con2);
+		
 		$filename = "IntegracionContableAuditores.csv";
 		header('Content-type: application/excel');
 		header('Content-Disposition:attachment; filename='.$filename);

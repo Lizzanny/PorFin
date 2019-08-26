@@ -75,10 +75,10 @@ private $CONTFECHBAJA = array();
     }
 
     private function guardaTemp($host,$daba,$user,$pass){
-    	
-    	$co = oci_connect($user, $pass, "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$host." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$daba.")))");
+    	$conn= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
+    	//$co = oci_connect($user, $pass, "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$host." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$daba.")))");
 
-    	$sql = "SELECT  
+    	$sql = "SELECT
         CUENTAS.CCDES CUENTA,
         CEDULAS.CONTCT CENTRO_TRABAJO,
         CEDULAS.CONTNUM CEDULA,
@@ -88,63 +88,68 @@ private $CONTFECHBAJA = array();
         CEDULAS.CONTSSC,
         CEDULAS.CONTSSSC,
         NVL(CEDULAS.CONTDES, '----') AS CONTDES,
-        TO_CHAR(NVL(CEDULAS.CONTFECHADQ,TO_DATE('01121900','DD-MM-RR'))) AS CONTFECHADQ,
+        TO_CHAR(CEDULAS.CONTFECHADQ, 'DD/MM/YYYY') AS CONTFECHADQ,
         CEDULAS.CONTFACTURA,
         CEDULAS.CONTCOSTO,
         NVL(CEDULAS.CONTORIGBIEN, '----') AS CONTORIGBIEN,
         NVL(CEDULAS.CONTASADEP, '0') AS CONTASADEP,
-        TO_CHAR(TO_DATE(CEDULAS.CONTFECHCAP,'DD-MM-RR'))AS CONTFECHCAP,
-        TO_CHAR(TO_DATE(CEDULAS.CONTFECHDEP,'DD-MM-RR')) AS CONTFECHDEP,
+        TO_CHAR(CEDULAS.CONTFECHCAP, 'DD/MM/YYYY') AS CONTFECHCAP,
+        TO_CHAR(CEDULAS.CONTFECHDEP, 'DD/MM/YYYY') AS CONTFECHDEP,
         NVL(CEDULAS.CONTPOLIZA, '----') AS CONTPOLIZA,
         NVL(CEDULAS.CONTREFALTAS, '----') AS CONTREFALTAS,
         NVL(CEDULAS.CONTREFBAJAS, '----') AS CONTREFBAJAS,
         NVL(CEDULAS.CONTABONO, '0') AS CONTABONO,
-        TO_CHAR(TO_DATE(CEDULAS.CONTFECHMOV,'DD-MM-RR')) AS CONTFECHMOV,
+        TO_CHAR(CEDULAS.CONTFECHMOV,'DD/MM/YYYY') AS CONTFECHMOV,
         CEDULAS.CONTDEPMEN,
         CEDULAS.CONTDEPANUAL,
         CEDULAS.CONTDEPACUM,
         CEDULAS.CONTSALXDEP,
         CEDULAS.CONTBAJADEP,
         CEDULAS.CONTMESDEP,
-        TO_CHAR(NVL(CEDULAS.CONTFECHDETDEP, TO_DATE('01121900','DD-MM-RR'))) AS CONTFECHDETDEP,
-        TO_CHAR(NVL(CEDULAS.CONTFECHBAJA, TO_DATE('01121900','DD-MM-RR'))) AS CONTFECHBAJA
+        TO_CHAR(CEDULAS.CONTFECHDETDEP, 'DD/MM/YYYY') AS CONTFECHDETDEP,
+        TO_CHAR(CEDULAS.CONTFECHBAJA, 'DD/MM/YYYY') AS CONTFECHBAJA
         FROM CEDULAS,CUENTAS
-        WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31122018','DD-MM-RR')
+        WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31/12/2018','DD/MM/YYYY')
         ORDER BY 2,3";
 
-        $stmt = oci_parse($co, $sql);
-        oci_execute($stmt);
-        for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){ 
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
 
-        	$arregloxd[$i] = "( '".str_replace("'",'"',$row['CUENTA'])."',
-        					     ".$row['CENTRO_TRABAJO'].",
-        					     ".$row['CEDULA'].",
-        					    '".str_replace("'",'"',$row['NUMACTIVO'])."',
-        					     ".$row['CONTCC'].",
-        					     ".$row['CONTSC'].",
-        					     ".$row['CONTSSC'].",
-        					     ".$row['CONTSSSC'].",
-        					    '".str_replace("'",'"',$row['CONTDES'])."',
-        					    '".str_replace("'",'"',$row['CONTFECHADQ'])."', 
-        					    '".str_replace("'",'"',$row['CONTFACTURA'])."', 
-        					     ".$row['CONTCOSTO'].",
-        					    '".str_replace("'",'"',$row['CONTORIGBIEN'])."',
-        					     ".$row['CONTASADEP'].",
-        					    '".str_replace("'",'"',$row['CONTFECHCAP'])."', 
-        					    '".str_replace("'",'"',$row['CONTFECHDEP'])."', 
-        					    '".str_replace("'",'"',$row['CONTPOLIZA'])."', 
-        					    '".str_replace("'",'"',$row['CONTREFALTAS'])."', 
-        					    '".str_replace("'",'"',$row['CONTREFBAJAS'])."', 
-        					     ".$row['CONTABONO'].",
-        					    '".str_replace("'",'"',$row['CONTFECHMOV'])."', 
-        					     ".$row['CONTDEPMEN'].",
-        					     ".$row['CONTDEPANUAL'].",
-        					     ".$row['CONTDEPACUM'].", 
-        					     ".$row['CONTSALXDEP'].", 
-        					     ".$row['CONTBAJADEP'].", 
-        					     ".$row['CONTMESDEP'].", 
-        					    '".str_replace("'",'"',$row['CONTFECHDETDEP'])."', 
-        					    '".str_replace("'",'"',$row['CONTFECHBAJA'])."')";
+        for ($i=0; $row = $stmt->fetch(PDO::FETCH_OBJ); $i++) {
+
+        //$stmt = oci_parse($co, $sql);
+        //oci_execute($stmt);
+        //for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){ 
+
+        	$arregloxd[$i] = "( '".str_replace("'",'"',$row->CUENTA)."',
+        					     ".$row->CENTRO_TRABAJO.",
+        					     ".$row->CEDULA.",
+        					    '".str_replace("'",'"',$row->NUMACTIVO)."',
+        					     ".$row->CONTCC.",
+        					     ".$row->CONTSC.",
+        					     ".$row->CONTSSC.",
+        					     ".$row->CONTSSSC.",
+        					    '".str_replace("'",'"',$row->CONTDES)."',
+        					    '".str_replace("'",'"',$row->CONTFECHADQ)."', 
+        					    '".str_replace("'",'"',$row->CONTFACTURA)."', 
+        					     ".$row->CONTCOSTO.",
+        					    '".str_replace("'",'"',$row->CONTORIGBIEN)."',
+        					     ".$row->CONTASADEP.",
+        					    '".str_replace("'",'"',$row->CONTFECHCAP)."', 
+        					    '".str_replace("'",'"',$row->CONTFECHDEP)."', 
+        					    '".str_replace("'",'"',$row->CONTPOLIZA)."', 
+        					    '".str_replace("'",'"',$row->CONTREFALTAS)."', 
+        					    '".str_replace("'",'"',$row->CONTREFBAJAS)."', 
+        					     ".$row->CONTABONO.",
+        					    '".str_replace("'",'"',$row->CONTFECHMOV)."', 
+        					     ".$row->CONTDEPMEN.",
+        					     ".$row->CONTDEPANUAL.",
+        					     ".$row->CONTDEPACUM.", 
+        					     ".$row->CONTSALXDEP.", 
+        					     ".$row->CONTBAJADEP.", 
+        					     ".$row->CONTMESDEP.", 
+        					    '".str_replace("'",'"',$row->CONTFECHDETDEP)."', 
+        					    '".str_replace("'",'"',$row->CONTFECHBAJA)."')";
         	
 
             $sql2 = "INSERT INTO ACTFIJ.INFOAUDITORIA(CUENTA, CENTRO_TRABAJO, CEDULA, ACTIVO, CONTCC, CONTSC, CONTSSC, CONTSSSC, CONTDES, CONTFECHADQ, CONTFACTURA, CONTCOSTO, CONTORIGBIEN, CONTASADEP, CONTFECHCAP, CONTFECHDEP, CONTPOLIZA, CONTREFALTAS, CONTREFBAJAS, CONTABONO, CONTFECHMOV, CONTDEPMEN, CONTDEPANUAL, CONTDEPACUM, CONTSALXDEP, CONTBAJADEP, CONTMESDEP, CONTFECHDETDEP, CONTFECHBAJA) VALUES $arregloxd[$i]"; 
@@ -152,7 +157,9 @@ private $CONTFECHBAJA = array();
             $ok=oci_execute($stmt2);
 			
         }
-        oci_free_statement($stmt);
+       // oci_free_statement($stmt);
+        $stmt = null;//cerrar consulta
+        $conn = null;//cerrar  conexion
         $this->cuentaReg = sizeof($arregloxd);
         return 1;
         //$this->insertaRows($arregloxd);

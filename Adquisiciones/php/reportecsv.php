@@ -7,7 +7,7 @@
  *  Modificacion: 
  *	
  */
-include_once '../../Libs/ConexionOracle.php'; 
+include '../../Libs/conexionOracle.php';
 require_once('../../vendor/autoload.php');
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
