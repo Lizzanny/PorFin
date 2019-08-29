@@ -1,8 +1,10 @@
 $(document).on("ready", function(){
-	listar();
 	$("#Aviso").modal();
 });
 
+$( "#fecha" ).change(function() {
+  	listar();
+});
 var arregloxd = new Array();
 var contador = 0;
 
@@ -52,30 +54,59 @@ var listar = function(){
 
 var obtener_data_checarCon = function(tbody, table){
 	$(tbody).on("click", "button.checarCon", function(){
+		var fech = $('#fecha').val();
 		var data = table.row( $(this).parents("tr") ).data();
 		var idsemaforo = '#images'+data.clve;
 		var botonesxdp = '#checkin'+data.clve;
-		$.ajax({
+		var d = new Date(fech),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    	if (month.length < 2) month = '0' + month;
+    	if (day.length < 2) day = '0' + day;
+	
+    	var fechx = [day, month, year].join('/');
+    	console.log(data.clve);
+    	$.ajax({
 		url: 'php/funciones.php',
 		type: 'POST',
 		dataType: 'html',
 		data: {
-				'opcion': 'checarConexion',
+				'opcion': 'Validate',
 				'clave': data.clve
 		      },
-		}).done(function(res) {
-			  if(res==1){
-			  	$(botonesxdp).attr('disabled','disabled');
-			  	$(idsemaforo).attr("src","../Libs/image/verde.png");
-			  	alertify.success('La base de datos esta disponible');
-			  	almacena(data.clve);
-			  }else{
-			  	alertify.error('La base de datos NO esta disponible');
-			  	$(botonesxdp).attr('disabled', 'disabled');
-			  	$(idsemaforo).attr("src","../Libs/image/rojo.png");
-			  }
+		}).done(function(resu) {
+			if(resu == 1){
+				$.ajax({
+				url: 'php/funciones.php',
+				type: 'POST',
+				dataType: 'html',
+				data: {
+					'opcion': 'checarConexion',
+					'clave': data.clve,
+					'fecha': fechx
+			    	},
+				}).done(function(res) {
+				  if(res==1){
+				  	$(botonesxdp).attr('disabled','disabled');
+				  	$(idsemaforo).attr("src","../Libs/image/verde.png");
+				  	alertify.success('La base de datos esta disponible');
+				  	almacena(data.clve);
+				  }else{
+				  	alertify.error('La base de datos NO esta disponible');
+				  	$(botonesxdp).attr('disabled', 'disabled');
+				  	$(idsemaforo).attr("src","../Libs/image/rojo.png");
+				  }
+				}).fail(function() {
+				    console.log("error");
+				}) 
+			}else{
+				alertify.error('Este centro de trabajo ya ha sido procesado');
+			}
+			
 		}).fail(function() {
-			    console.log("error");
+				    console.log("error");
 		}) 
 	});
 }
@@ -108,11 +139,10 @@ var idioma_espanol = {
 
 
 function almacena(clave){
-	console.log(clave);
+	//console.log(clave);
 	arregloxd[contador]=clave;
 	
 	//console.log(arregloxd[contador]);
 	contador++;
 //console.log(arregloxd);
 }
-

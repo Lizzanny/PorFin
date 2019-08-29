@@ -41,6 +41,13 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-4 offset-md-4">
+                    <label>Fecha:</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha">
+                </div>
+            </div>
+            <br>
+            <div class="row">
                 <div id="cuadro1" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="tablita table-responsive col-xs-12 col-sm-12 col-md-12 col-lg-12" >      
                         <table id="usuarios" class="table table-bordered table-condensed" width="90%">

@@ -47,7 +47,7 @@ private $CONTFECHBAJA = array();
 		$this->cve_user = $_SESSION['username']; 
 	}
 
-	public function checarConexion($cve){
+	public function checarConexion($cve, $fec){
 		$sql = "SELECT CT_CLAVE, DB_NAME, DB_INSTANCE, USUARIO, CLAVE, IP, SID FROM C_DBLINKS WHERE CT_CLAVE = '$cve'";
 		$stmt = oci_parse($this->con2, $sql);
 		oci_execute($stmt);
@@ -57,14 +57,14 @@ private $CONTFECHBAJA = array();
 		$user = $row["USUARIO"];
 		$pass = $row["CLAVE"];
 
-		$this->ProbarConexionBaseRemota($host,$daba,$user,$pass);
+		$this->ProbarConexionBaseRemota($host,$daba,$user,$pass, $fec);
 	}
 
-	private function ProbarConexionBaseRemota($host,$daba,$user,$pass){
+	private function ProbarConexionBaseRemota($host,$daba,$user,$pass, $fec){
         $checar=0; 
         try{    
             $base= new PDO("oci:dbname=$host/$daba;charset=utf8", $user, $pass);
-            $checar = $this->guardaTemp($host,$daba,$user,$pass);
+            $checar = $this->guardaTemp($host,$daba,$user,$pass,$fec);
             $base = null;
             //$checar=1;
         }catch(PDOException $e){
@@ -74,7 +74,7 @@ private $CONTFECHBAJA = array();
         echo $checar; 
     }
 
-    private function guardaTemp($host,$daba,$user,$pass){
+    private function guardaTemp($host,$daba,$user,$pass,$fec){
     	$conn= new PDO("oci:dbname=$host/$daba;charset=utf8" ,$user ,$pass);
     	//$co = oci_connect($user, $pass, "(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = ".$host." )(PORT = 1521)) (CONNECT_DATA =  (SID =".$daba.")))");
 
@@ -109,7 +109,7 @@ private $CONTFECHBAJA = array();
         TO_CHAR(CEDULAS.CONTFECHDETDEP, 'DD/MM/YYYY') AS CONTFECHDETDEP,
         TO_CHAR(CEDULAS.CONTFECHBAJA, 'DD/MM/YYYY') AS CONTFECHBAJA
         FROM CEDULAS,CUENTAS
-        WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('31/12/2018','DD/MM/YYYY')
+        WHERE CEDULAS.CONTCC=CUENTAS.CCNUM AND CEDULAS.CONTFECHMOV <= TO_DATE('$fec','DD/MM/YYYY')
         ORDER BY 2,3";
 
         $stmt = $conn->prepare($sql);
@@ -121,40 +121,46 @@ private $CONTFECHBAJA = array();
         //oci_execute($stmt);
         //for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){ 
 
-        	$arregloxd[$i] = "( '".str_replace("'",'"',$row->CUENTA)."',
-        					     ".$row->CENTRO_TRABAJO.",
-        					     ".$row->CEDULA.",
-        					    '".str_replace("'",'"',$row->NUMACTIVO)."',
+        	$arregloxd[$i] = "( '".substr(str_replace(array('\'', '"'), '' , $row->CUENTA), 0, 99)."',
+        					     ".$row->CENTRO_TRABAJO.", 
+        					     ".$row->CEDULA.", 
+        					    '".substr(str_replace(array('\'', '"'), '', $row->NUMACTIVO), 0, 3999)."',
         					     ".$row->CONTCC.",
         					     ".$row->CONTSC.",
         					     ".$row->CONTSSC.",
         					     ".$row->CONTSSSC.",
-        					    '".str_replace("'",'"',$row->CONTDES)."',
-        					    '".str_replace("'",'"',$row->CONTFECHADQ)."', 
-        					    '".str_replace("'",'"',$row->CONTFACTURA)."', 
-        					     ".$row->CONTCOSTO.",
-        					    '".str_replace("'",'"',$row->CONTORIGBIEN)."',
-        					     ".$row->CONTASADEP.",
-        					    '".str_replace("'",'"',$row->CONTFECHCAP)."', 
-        					    '".str_replace("'",'"',$row->CONTFECHDEP)."', 
-        					    '".str_replace("'",'"',$row->CONTPOLIZA)."', 
-        					    '".str_replace("'",'"',$row->CONTREFALTAS)."', 
-        					    '".str_replace("'",'"',$row->CONTREFBAJAS)."', 
-        					     ".$row->CONTABONO.",
-        					    '".str_replace("'",'"',$row->CONTFECHMOV)."', 
-        					     ".$row->CONTDEPMEN.",
-        					     ".$row->CONTDEPANUAL.",
-        					     ".$row->CONTDEPACUM.", 
-        					     ".$row->CONTSALXDEP.", 
-        					     ".$row->CONTBAJADEP.", 
-        					     ".$row->CONTMESDEP.", 
-        					    '".str_replace("'",'"',$row->CONTFECHDETDEP)."', 
-        					    '".str_replace("'",'"',$row->CONTFECHBAJA)."')";
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTDES), 0, 99)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHADQ), 0, 19)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFACTURA), 0, 11)."',
+        					     ".str_replace(',','.',$row->CONTCOSTO).",
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTORIGBIEN), 0, 29)."',
+        					     ".str_replace(',','.',$row->CONTASADEP).",
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHCAP), 0, 19)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHDEP), 0, 19)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTPOLIZA), 0, 9)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTREFALTAS), 0, 99)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTREFBAJAS),0,99)."',
+        					     ".str_replace(',','.',$row->CONTABONO).",
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHMOV), 0, 19)."',
+        					     ".str_replace(',','.',$row->CONTDEPMEN).",
+        					     ".str_replace(',','.',$row->CONTDEPANUAL).",
+        					     ".str_replace(',','.',$row->CONTDEPACUM).",
+        					     ".str_replace(',','.',$row->CONTSALXDEP).",
+        					     ".str_replace(',','.',$row->CONTBAJADEP).",
+        					     ".$row->CONTMESDEP.",
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHDETDEP), 0, 19)."',
+        					    '".substr(str_replace(array('\'', '"'), '', $row->CONTFECHBAJA), 0, 19)."')";
         	
 
             $sql2 = "INSERT INTO ACTFIJ.INFOAUDITORIA(CUENTA, CENTRO_TRABAJO, CEDULA, ACTIVO, CONTCC, CONTSC, CONTSSC, CONTSSSC, CONTDES, CONTFECHADQ, CONTFACTURA, CONTCOSTO, CONTORIGBIEN, CONTASADEP, CONTFECHCAP, CONTFECHDEP, CONTPOLIZA, CONTREFALTAS, CONTREFBAJAS, CONTABONO, CONTFECHMOV, CONTDEPMEN, CONTDEPANUAL, CONTDEPACUM, CONTSALXDEP, CONTBAJADEP, CONTMESDEP, CONTFECHDETDEP, CONTFECHBAJA) VALUES $arregloxd[$i]"; 
             $stmt2 = oci_parse($this->con2, $sql2);
             $ok=oci_execute($stmt2);
+            if($ok!=true){
+                echo $sql .'<br>';//adwendn
+                 echo $sql2 .'<br>';//adwendn
+            }else{
+               // echo 'ok';
+            }
 			
         }
        // oci_free_statement($stmt);
@@ -215,6 +221,26 @@ private $CONTFECHBAJA = array();
       echo json_encode($array);
     }
 
+    public function Validate($clave){
+
+        $resp = 0;
+        $sqlx = "SELECT count(*) AS CONT FROM ACTFIJ.INFOAUDITORIA WHERE CENTRO_TRABAJO = $clave";
+        //echo $sqlx;
+        $stmtx = oci_parse($this->con2, $sqlx);
+        $ok=oci_execute($stmtx);
+        $row = oci_fetch_array($stmtx, OCI_BOTH);
+        $nreg = (int)$row['CONT'];
+
+        //echo 'nreg '.$nreg.'<br>';
+
+        if($nreg > 0 ){
+            $resp = 2;
+        }else{
+            $resp = 1;
+        }
+        echo $resp;
+    }
+
 
 }//end class
 
@@ -225,11 +251,15 @@ private $CONTFECHBAJA = array();
 	switch ($opc) {
 		//---------------------------operaciones para grupos
 		case 'checarConexion':
-			$ob->checarConexion($_POST['clave']);
+			$ob->checarConexion($_POST['clave'], $_POST['fecha']);
 		break;
 
         case 'VaciarT':
             $ob->VaciarTab();
+        break;
+
+        case 'Validate':
+            $ob->Validate($_POST['clave']);
         break;
 
 		default:
