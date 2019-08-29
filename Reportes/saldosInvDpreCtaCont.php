@@ -119,7 +119,6 @@ class InvDpreCtaCont extends ConexionOracle{
                      WHERE CEDULAS.CONTCT = $this->cvect AND CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND CEDULAS.CONTFECHMOV  <=TO_DATE('".$this->fecfi."', 'DD/MM/YY') AND 
 					(CEDULAS.CONTFECHBAJA is NULL OR CEDULAS.CONTFECHBAJA > TO_DATE('".$this->fecfi."', 'DD/MM/YY'))
                     GROUP BY CEDULAS.CONTNUM, CEDULAS.CONTCC
-                    ORDER BY CEDULAS.CONTNUM";
 			$stmt = oci_parse($this->con2, $sql);
 			oci_execute($stmt);
 
@@ -140,26 +139,26 @@ class InvDpreCtaCont extends ConexionOracle{
 		$inversiones = 0;
 		$depreciaciones = 0;
 		for ($i=0; $i < $this->tamCuent; $i++) { 
-					$suma1 = 0;
-					$suma2 = 0;
-					$suma3 = 0;
-					$suma4 = 0;
-					$suma5 = 0;
-					$suma6 = 0;
-					$suma7 = 0;
-					$suma8 = 0;
-					$suma9 = 0;
-					$sumax = 0 ;
-					$depre1 = 0;
-					$depre2 = 0;
-					$depre3 = 0;
-					$depre4 = 0;
-					$depre5 = 0;
-					$depre6 = 0;
-					$depre7 = 0;
-					$depre8 = 0;
-					$depre9 = 0;
-					$deprex = 0;
+					$suma1 = 0.0;
+					$suma2 = 0.0;
+					$suma3 = 0.0;
+					$suma4 = 0.0;
+					$suma5 = 0.0;
+					$suma6 = 0.0;
+					$suma7 = 0.0;
+					$suma8 = 0.0;
+					$suma9 = 0.0;
+					$sumax = 0.0 ;
+					$depre1 = 0.0;
+					$depre2 = 0.0;
+					$depre3 = 0.0;
+					$depre4 = 0.0;
+					$depre5 = 0.0;
+					$depre6 = 0.0;
+					$depre7 = 0.0;
+					$depre8 = 0.0;
+					$depre9 = 0.0;
+					$deprex = 0.0;
 
 			for($j=0; $j<$this->tam[$i]; $j++){
 
@@ -177,7 +176,22 @@ class InvDpreCtaCont extends ConexionOracle{
 						ON CEDULAS.CONTCT = ACTIVOS.CONTCT
 						AND CEDULAS.CONTNUM = ACTIVOS.CONTNUM
                         WHERE CEDULAS.CONTCT = $this->cvect AND CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND CEDULAS.CONTFECHMOV  <=TO_DATE('".$this->fecfi."', 'DD/MM/YY') AND 
-					(CEDULAS.CONTFECHBAJA is NULL OR CEDULAS.CONTFECHBAJA > TO_DATE('".$this->fecfi."', 'DD/MM/YY')) AND CEDULAS.CONTNUM=".$this->cuentas[$i][$j]['cedula'];
+					(CEDULAS.CONTFECHBAJA is NULL OR CEDULAS.CONTFECHBAJA > TO_DATE('".$this->fecfi."', 'DD/MM/YY')) AND CEDULAS.CONTNUM=".$this->cuentas[$i][$j]['cedula']."AND ROWNUM=1"
+					;
+
+
+				/*	"WHERE CEDULAS.CONTCT = $this->cvect AND
+					CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND
+					( (CEDULAS.CONTFECHMOV  <= TO_DATE('31/07/2019', 'DD/MM/YYYY') AND
+					CEDULAS.CONTFECHBAJA is NULL)
+					or
+					not (CEDULAS.CONTFECHMOV  <= TO_DATE('31/07/2019', 'DD/MM/YYYY') AND
+               		CEDULAS.CONTFECHBAJA <= TO_DATE('31/07/2019', 'DD/MM/YYYY')) )"
+				   /* ESTOY LIMITANDO A UNO EL NUMERO DE REGISTROS. PARA EVITAR QUE SE DUPLIQUEN LOS NUMEROS. DE CEDULA
+					*
+					* 
+					*/
+					
 
          //echo $sql;
             	$stmt = oci_parse($this->con2, $sql);
@@ -188,46 +202,46 @@ class InvDpreCtaCont extends ConexionOracle{
 											 'cc' => $rowx['CCCENCOS'], 
 											 'cu' => $rowx['CONTCC'], 
 											 'ce' => $rowx['CONTNUM'], 
-											 'ca' => $rowx['CONTCOSTO'],
-											 'de' => $rowx['IMPDEP']
+											 'ca' => (double)$rowx['CONTCOSTO'],
+											 'de' => (double)$rowx['IMPDEP']
 											);
 
 					if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=0 && $this->reg[$i][$j][$x]['cc']<=199)){
-						$suma1 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre1 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma1 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre1 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=200 && $this->reg[$i][$j][$x]['cc']<=299)){
-						$suma2 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre2 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma2 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre2 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=300 && $this->reg[$i][$j][$x]['cc']<=399)){
-						$suma3 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre3 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma3 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre3 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=400 && $this->reg[$i][$j][$x]['cc']<=499)){
-						$suma4 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre4 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma4 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre4 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=500 && $this->reg[$i][$j][$x]['cc']<=599)){
-						$suma5 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre5 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma5 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre5 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=600 && $this->reg[$i][$j][$x]['cc']<=699)){
-						$suma6 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre6 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma6 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre6 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=700 && $this->reg[$i][$j][$x]['cc']<=799)){
-						$suma7 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre7 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma7 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre7 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=800 && $this->reg[$i][$j][$x]['cc']<=899)){
-						$suma8 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre8 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma8 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre8 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=900 && $this->reg[$i][$j][$x]['cc']<=999)){
-						$suma9 +=  $this->reg[$i][$j][$x]['ca'];
-						$depre9 += $this->reg[$i][$j][$x]['de'];
+						(Double)$suma9 +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$depre9 += (Double)$this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc'] == 1000 )){
-						$sumax +=  $this->reg[$i][$j][$x]['ca'];
-						$deprex += $this->reg[$i][$j][$x]['de'];
+						(Double)$sumax +=  (Double)$this->reg[$i][$j][$x]['ca'];
+						(Double)$deprex += (Double)$this->reg[$i][$j][$x]['de'];
 					}
 
 				}    
 
-				$inversiones = $suma1 + $suma2 + $suma3 + $suma4 + $suma5 + $suma6 + $suma7 + $suma8 + $suma9 + $sumax;
-				$depreciaciones = $depre1 + $depre2 + $depre3 + $depre4 + $depre5 + $depre6 + $depre7 + $depre8 + $depre9 + $deprex;
+				(Double)$inversiones = $suma1 + $suma2 + $suma3 + $suma4 + $suma5 + $suma6 + $suma7 + $suma8 + $suma9 + $sumax;
+				(Double)$depreciaciones = $depre1 + $depre2 + $depre3 + $depre4 + $depre5 + $depre6 + $depre7 + $depre8 + $depre9 + $deprex;
 
 				$this->arreInverciones[$i] = array(
 									  $this->LibFormatoMoneda($suma1),
