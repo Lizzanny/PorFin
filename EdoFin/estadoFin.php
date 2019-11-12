@@ -38,15 +38,15 @@
                     <h3 class="text-center text-uppercase">Estado de situación financiera</h3>
                 </div>
             </div>
-            <iframe src="http://172.30.10.72:8083/EdoFin" height="800px" width="100%"></iframe>
+            <iframe src="http://172.30.10.72:8080/EdoFin" height="800px" width="100%"></iframe>
            
         </div>
     </div>
 
  
-    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script src="../Libs/js/bootstrap.min.js"></script>
-    <script src="../Libs/alertifyjs/alertify.min.js"></script>
+    <script src="../Libs/alertifyjs/alertify.min.js"></script>-->
 
     
 </body>

@@ -133,7 +133,6 @@
                     </div>
                     <div id="div3" name="div3" class="col-xs-12 col-sm-12 col-md-4">
                         <h5 id="h4s" name="h4s" ><strong>PORTAL FINANCIERO</strong></h5>
-                        <h5 id="h4s" name="h4s" ><strong>PORFINAN</strong></h5>
                     </div>
                 </div>
                 
@@ -191,8 +190,9 @@ if($rol == 'RFINCONTABLE' || $rol=='RFINADM'){ ?>
                             Contable
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="../EdoFin/estadoFin.php">Estado de situación financiera</a></li>
-                            <li><a href="#">Cedula financiera a cuenta 1117</a></li>
+                            <!--<li><a href="../EdoFin/estadoFin.php">Estado de situación financiera</a></li>-->
+                            <li><a href="http://172.30.10.72:8080/EdoFin" target="blank_">Estado de situación financiera</a></li>
+                            <li><a href="../repof/rcf.php">Cédula del I.V.A cuenta 1117</a></li>
                             <li><a data-toggle='modal' data-target='#generar'>Saldos de activo fijo por cuenta y Centro de costos</a></li>
                             <li><a href="../RAudit/TableRepor.php">Integración contable para auditores</a></li>
                             <li><a href="../Adquisiciones/index.php">Libro de inventarios y balances</a></li>

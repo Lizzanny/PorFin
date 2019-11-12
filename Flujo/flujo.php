@@ -8,16 +8,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <title>Flujo de Efectivo</title>
+
     <link rel="icon" type="image/png" href="../Libs/image/ICON.png" />
-    <!-- Bootstrap CSS
-    <link rel="stylesheet" href="../Libs/css/bootstrap.min.css"> -->
-    <!-- CSS  propio
-    <link rel="stylesheet" href="../Libs/css/style4.css">-->
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="../Libs/css/bootstrap.min.css"> 
+    <!-- CSS  propio-->
+    <link rel="stylesheet" href="../Libs/css/style4.css">
     <link href="https://demos.telerik.com/kendo-ui/grid/excel-export">
     <style>html { font-size: 14px; font-family: Arial, Helvetica, sans-serif; }</style>
-	<!--
+	<!---->
     <script defer src="../Libs/fontAwesome/js/solid.js" ></script>
-    <script defer src="../Libs/fontAwesome/js/fontawesome.js"></script>-->
+    <script defer src="../Libs/fontAwesome/js/fontawesome.js"></script>
     
    <!--
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2019.2.514/styles/kendo.common-material.min.css" />
@@ -67,15 +68,15 @@
  $mes = $_REQUEST["mesdesde"];
  $axo = $_REQUEST["axo"];
 // $mes = "MAYO";
- echo "MES: ".$mes;
+ //echo "MES: ".$mes;
 ?>
 <body>
     <?php 
-          include '../Main/main.php';
-        ?>
-    <div class="container">
+          //include '../Main/main.php';
+    ?>
+    <div class="container-fluid">
       
-        <div id="content" style="margin-top: 10%; margin-left:0; width: 100%;">
+        <div id="content" style="margin-top: 3%; margin-left:0; width: 100%;">
 
 
 <div style="margin-top:15px; margin-bottom:15px;">
@@ -1183,8 +1184,6 @@ $("#grid").kendoGrid({
     <script src="../Libs/js/popper.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="../Libs/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript" src="../Libs/js/mainfunction.js"> </script>
 
 
 </body>

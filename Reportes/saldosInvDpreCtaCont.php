@@ -21,6 +21,15 @@ class InvDpreCtaCont extends ConexionOracle{
 	private $cuentas= array();
 	private $reg = array();
 	private $tam = array();
+
+	////////variables para mi generacion de reporte de ct
+	//private $tsoh;
+	//private $abad;
+	//private $resu;
+	//private $ssap;
+	private $conn;
+	private $name;
+	///
 	
 	
 	//DIRECCIONES DE AREAS 
@@ -49,32 +58,43 @@ class InvDpreCtaCont extends ConexionOracle{
 		$indi=0;
 		for ($i=100; $i <=900; $i=$i+100) { 
 			//echo "el valor de i es: ".$i."<br>";
-			$sql="SELECT CCDESCRIP,CCCENCOS FROM CENTROS_DE_COSTO WHERE CCCENCOS = $i AND CTCENTRAB = $this->cvect"; 
+			$sql="SELECT CCDESCRIP,CCCENCOS FROM CENTROS_DE_COSTO@$this->name WHERE CCCENCOS = $i"; 
+
 			$stmt = oci_parse($this->con2, $sql);
 			oci_execute($stmt);
 			$row = oci_fetch_array($stmt, OCI_BOTH);
-			//echo $row['CCDESCRIP'];
+
+			$valorx= $row['CCCENCOS']; 
+
+			if($valorx=){
+
+			}
+
 			if($i==100){
 				$this->NomDirec[$indi]= array('desc' =>$row['CCDESCRIP'],
 					'cosin'=> 0,
 					'cosfn'=> 199
-					 );/**/
-			}else if($i>100 && $i<=900){
+			);
+			}else if($i>=200 && $i<=900){
 				$this->NomDirec[$indi]= array('desc' =>$row['CCDESCRIP'],
-					'cosin'=> (int)$row[CCCENCOS],
-					'cosfn'=> $row[CCCENCOS]+99
-					 );/**/
+					'cosin'=> (int)$row['CCCENCOS'],
+					'cosfn'=> $row['CCCENCOS']+99
+					 );
 			}//else{
-				$this->NomDirec[9]= array('desc' =>'SIN CENTRO DE COSTO',
+				$this->NomDirec[]= array('desc' =>'SIN CENTRO DE COSTO',
 					'cosin'=> 1000,
 					'cosfn'=> 1000
 					 );/**/
 			//}
+			//
+			
 			
 			
 			$indi++; 
 		}
+		echo json_encode( $this->NomDirec);
 		$this->tamAreas=sizeof($this->NomDirec);
+		//$stmt = null;
 		//echo "".$this->tamAreas."";
 		//echo json_encode($this->NomDirec);
 		//aqui van las consultas
@@ -84,16 +104,21 @@ class InvDpreCtaCont extends ConexionOracle{
 	private function ConsultasObtCuentas(){
 
 		//echo "el valor de i es: ".$i."<br>";
-		$sql="SELECT CCNUM, CCDES FROM CUENTAS"; 
+		$sql="SELECT CCNUM, CCDES FROM CUENTAS@$this->name"; 
+		/*$stmt = $this->conn->prepare($sql);
+        	$stmt->execute();
+        	$row = $stmt->fetch(PDO::FETCH_OBJ);*/
 		$stmt = oci_parse($this->con2, $sql);
 		oci_execute($stmt);
+
 		for ($i=0; $row = oci_fetch_array($stmt, OCI_BOTH); $i++){
 		//echo $row['CCDESCRIP'];
 			$this->infCuent[$i]= array('cvecta' => (int)$row['CCNUM'],
-									'nomcta' => $row[CCDES]
+									'nomcta' => $row['CCDES']
 					 );
 		}
 		$this->tamCuent=sizeof($this->infCuent);
+		//$stmt = null;
 		//echo "".$this->tamAreas."";
 		//echo json_encode($this->infCuent);
 		//aqui van las consultas
@@ -106,23 +131,27 @@ class InvDpreCtaCont extends ConexionOracle{
 		$stmt = oci_parse($this->con2, $sql);
 		oci_execute($stmt);
 		$row = oci_fetch_array($stmt, OCI_BOTH);
-			$this->centro = $row['CTDESCRIP'];
+		$this->centro = $row['CTDESCRIP'];
 		
 	}
 
 	private function obtenerCedulas(){
 		for ($i=0; $i < $this->tamCuent; $i++) { 
 			$sql="SELECT CEDULAS.CONTNUM, CEDULAS.CONTCC
-                FROM CEDULAS 
+                FROM CEDULAS@$this->name
                     LEFT JOIN ACTIVOS ON CEDULAS.CONTCT = ACTIVOS.CONTCT AND CEDULAS.CONTNUM = ACTIVOS.CONTNUM
                     INNER JOIN CUENTAS ON CUENTAS.CCNUM = CEDULAS.CONTCC
                      WHERE CEDULAS.CONTCT = $this->cvect AND CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND CEDULAS.CONTFECHMOV  <=TO_DATE('".$this->fecfi."', 'DD/MM/YY') AND 
 					(CEDULAS.CONTFECHBAJA is NULL OR CEDULAS.CONTFECHBAJA > TO_DATE('".$this->fecfi."', 'DD/MM/YY'))
                     GROUP BY CEDULAS.CONTNUM, CEDULAS.CONTCC
+                    ORDER BY CEDULAS.CONTNUM";
+
+                    /*$stmt = $this->conn->prepare($sql);
+        			$stmt->execute();*/
 			$stmt = oci_parse($this->con2, $sql);
 			oci_execute($stmt);
 
-			for($j=0; $row = oci_fetch_array($stmt, OCI_BOTH); $j++){
+			for($j=0;$row = oci_fetch_array($stmt, OCI_BOTH); $j++){
 				$this->cuentas[$i][$j] = array('cedula'=>$row['CONTNUM'],
 												'cuenta'=>$row['CONTCC']);
 				$lenght[$i] = count($this->cuentas[$i]);
@@ -131,6 +160,7 @@ class InvDpreCtaCont extends ConexionOracle{
 		//echo $this->cuentas[0][0]['cedula'];
 
 		$this->obtenxCuenta($lenght);
+		//$stmt = null;
 	}
 
 
@@ -139,26 +169,26 @@ class InvDpreCtaCont extends ConexionOracle{
 		$inversiones = 0;
 		$depreciaciones = 0;
 		for ($i=0; $i < $this->tamCuent; $i++) { 
-					$suma1 = 0.0;
-					$suma2 = 0.0;
-					$suma3 = 0.0;
-					$suma4 = 0.0;
-					$suma5 = 0.0;
-					$suma6 = 0.0;
-					$suma7 = 0.0;
-					$suma8 = 0.0;
-					$suma9 = 0.0;
-					$sumax = 0.0 ;
-					$depre1 = 0.0;
-					$depre2 = 0.0;
-					$depre3 = 0.0;
-					$depre4 = 0.0;
-					$depre5 = 0.0;
-					$depre6 = 0.0;
-					$depre7 = 0.0;
-					$depre8 = 0.0;
-					$depre9 = 0.0;
-					$deprex = 0.0;
+					$suma1 = 0;
+					$suma2 = 0;
+					$suma3 = 0;
+					$suma4 = 0;
+					$suma5 = 0;
+					$suma6 = 0;
+					$suma7 = 0;
+					$suma8 = 0;
+					$suma9 = 0;
+					$sumax = 0 ;
+					$depre1 = 0;
+					$depre2 = 0;
+					$depre3 = 0;
+					$depre4 = 0;
+					$depre5 = 0;
+					$depre6 = 0;
+					$depre7 = 0;
+					$depre8 = 0;
+					$depre9 = 0;
+					$deprex = 0;
 
 			for($j=0; $j<$this->tam[$i]; $j++){
 
@@ -171,77 +201,72 @@ class InvDpreCtaCont extends ConexionOracle{
 						CEDULAS.CONTDEPMEN,
 						CEDULAS.CONTMESDEP,
 						TO_DATE('".$this->fecfi."', 'DD/MM/YY')) as IMPDEP
-    					FROM CEDULAS 
+    					FROM CEDULAS@$this->name
 						LEFT JOIN ACTIVOS 
 						ON CEDULAS.CONTCT = ACTIVOS.CONTCT
 						AND CEDULAS.CONTNUM = ACTIVOS.CONTNUM
                         WHERE CEDULAS.CONTCT = $this->cvect AND CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND CEDULAS.CONTFECHMOV  <=TO_DATE('".$this->fecfi."', 'DD/MM/YY') AND 
 					(CEDULAS.CONTFECHBAJA is NULL OR CEDULAS.CONTFECHBAJA > TO_DATE('".$this->fecfi."', 'DD/MM/YY')) AND CEDULAS.CONTNUM=".$this->cuentas[$i][$j]['cedula']."AND ROWNUM=1"
 					;
-
-
-				/*	"WHERE CEDULAS.CONTCT = $this->cvect AND
-					CEDULAS.CONTCC = ".$this->infCuent[$i]['cvecta']." AND
-					( (CEDULAS.CONTFECHMOV  <= TO_DATE('31/07/2019', 'DD/MM/YYYY') AND
-					CEDULAS.CONTFECHBAJA is NULL)
-					or
-					not (CEDULAS.CONTFECHMOV  <= TO_DATE('31/07/2019', 'DD/MM/YYYY') AND
-               		CEDULAS.CONTFECHBAJA <= TO_DATE('31/07/2019', 'DD/MM/YYYY')) )"
 				   /* ESTOY LIMITANDO A UNO EL NUMERO DE REGISTROS. PARA EVITAR QUE SE DUPLIQUEN LOS NUMEROS. DE CEDULA
 					*
 					* 
 					*/
 					
 
-         //echo $sql;
             	$stmt = oci_parse($this->con2, $sql);
 				oci_execute($stmt);
-					
+				/*$stmt = $this->conn->prepare($sql);
+        		$stmt->execute();*/
+
+        		
 				for($x=0; $rowx = oci_fetch_array($stmt, OCI_BOTH); $x++){
 					$this->reg[$i][$j][$x] = array('ct' => $rowx['CONTCT'], 
 											 'cc' => $rowx['CCCENCOS'], 
 											 'cu' => $rowx['CONTCC'], 
 											 'ce' => $rowx['CONTNUM'], 
-											 'ca' => (double)$rowx['CONTCOSTO'],
-											 'de' => (double)$rowx['IMPDEP']
+											 'ca' => $rowx['CONTCOSTO'],
+											 'de' => $rowx['IMPDEP']
 											);
 
+
 					if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=0 && $this->reg[$i][$j][$x]['cc']<=199)){
-						(Double)$suma1 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre1 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma1 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre1 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=200 && $this->reg[$i][$j][$x]['cc']<=299)){
-						(Double)$suma2 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre2 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma2 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre2 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=300 && $this->reg[$i][$j][$x]['cc']<=399)){
-						(Double)$suma3 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre3 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma3 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre3 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=400 && $this->reg[$i][$j][$x]['cc']<=499)){
-						(Double)$suma4 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre4 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma4 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre4 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=500 && $this->reg[$i][$j][$x]['cc']<=599)){
-						(Double)$suma5 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre5 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma5 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre5 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=600 && $this->reg[$i][$j][$x]['cc']<=699)){
-						(Double)$suma6 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre6 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma6 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre6 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=700 && $this->reg[$i][$j][$x]['cc']<=799)){
-						(Double)$suma7 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre7 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma7 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre7 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=800 && $this->reg[$i][$j][$x]['cc']<=899)){
-						(Double)$suma8 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre8 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma8 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre8 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc']>=900 && $this->reg[$i][$j][$x]['cc']<=999)){
-						(Double)$suma9 +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$depre9 += (Double)$this->reg[$i][$j][$x]['de'];
+						$suma9 +=  $this->reg[$i][$j][$x]['ca'];
+						$depre9 += $this->reg[$i][$j][$x]['de'];
 					}else if($this->reg[$i][$j][$x]['cu']==$this->infCuent[$i]['cvecta'] && ($this->reg[$i][$j][$x]['cc'] == 1000 )){
-						(Double)$sumax +=  (Double)$this->reg[$i][$j][$x]['ca'];
-						(Double)$deprex += (Double)$this->reg[$i][$j][$x]['de'];
+						$sumax +=  $this->reg[$i][$j][$x]['ca'];
+						$deprex += $this->reg[$i][$j][$x]['de'];
 					}
 
 				}    
 
-				(Double)$inversiones = $suma1 + $suma2 + $suma3 + $suma4 + $suma5 + $suma6 + $suma7 + $suma8 + $suma9 + $sumax;
-				(Double)$depreciaciones = $depre1 + $depre2 + $depre3 + $depre4 + $depre5 + $depre6 + $depre7 + $depre8 + $depre9 + $deprex;
+
+				$inversiones = $suma1 + $suma2 + $suma3 + $suma4 + $suma5 + $suma6 + $suma7 + $suma8 + $suma9 + $sumax;
+				$depreciaciones = $depre1 + $depre2 + $depre3 + $depre4 + $depre5 + $depre6 + $depre7 + $depre8 + $depre9 + $deprex;
 
 				$this->arreInverciones[$i] = array(
 									  $this->LibFormatoMoneda($suma1),
@@ -278,6 +303,9 @@ class InvDpreCtaCont extends ConexionOracle{
         }
         
     //    echo json_encode($this->arreInverciones);
+    //  
+    //$stmt = null;
+    // $conn = null;  
 	}/**/
 
 
@@ -514,6 +542,19 @@ class InvDpreCtaCont extends ConexionOracle{
 	}
 
 	public function MetodoDeAccesoParaIniciar($ct, $fi,$ff){
+		$sqldet = "SELECT USUARIO, CLAVE, IP, SID, DB_NAME FROM C_DBLINKS WHERE CT_CLAVE = $ct";
+		$stmtdt = oci_parse($this->con2, $sqldet);
+		oci_execute($stmtdt);
+		$row = oci_fetch_array($stmtdt, OCI_BOTH);
+
+        //$resu = $row['USUARIO'];
+		//$ssap = $row['CLAVE'];
+		//$tsoh = $row['IP'];
+		//$abad = $row['SID'];
+		$this->name = $row['DB_NAME'];
+
+		//$this->conn =  new PDO("oci:dbname=$tsoh/$abad;charset=utf8" ,$resu ,$ssap);
+
 		$this->cvect = $ct; 
 		$datei = date_create($fi);//fechas iniciales
 		$fechai = date_format($datei, 'd/m/Y');
@@ -525,11 +566,11 @@ class InvDpreCtaCont extends ConexionOracle{
 		
 		$this->ConsultasObtDirecciones();
 
-		$this->ConsultasObtCuentas();
-		$this->obtenerCedulas();
-
-		$this->Estructura_HTML_PDF_CTL_PAGOS(); //19Y04K22V9Y
-		$this->ImprimirMPDF(); 
+	//	$this->ConsultasObtCuentas();
+	//	$this->obtenerCedulas();
+////
+		//$this->Estructura_HTML_PDF_CTL_PAGOS(); //19Y04K22V9Y
+		//$this->ImprimirMPDF(); 
 	}
 
 

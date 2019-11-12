@@ -9,8 +9,8 @@
     <title>Adquisiciones</title>
     <link rel="icon" type="image/png" href="../Libs/image/ICON.png" />
 
-    <!-- Bootstrap CSS Online
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">-->
+    <!-- Bootstrap CSS Online-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     
      <!-- Bootstrap CSS 
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
@@ -93,14 +93,14 @@
 
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionAdquisi">
                           <div class="card-body">
-                            <p><strong>Instrucciones</strong>: Para generar el reporte de adquisiciones es necesario seleccionar el año para el que desea obtener la información, después marcar cada una de las casillas de verificación de los centros de trabajo. Al hacer clic sobre dicha casilla se desplegara barra de progreso indicando la carga de la información y en seguida se mostrará un semáforo que marca los siguientes status:</p>
+                            <p><strong>Instrucciones</strong>: Para generar el reporte de adquisiciones es necesario seleccionar el año para el que desea obtener la información, después marcar cada una de las casillas de verificación de los centros de trabajo. Al hacer clic sobre dicha casilla se desplegará una barra de progreso indicando la carga de la información y en seguida se mostrará un semáforo que marca los siguientes status:</p>
                                 <ul>
                                     <li>Verde: La información se ha completado exitosamente.</li>
                                     <li>Naranja: Está intentando duplicar la información que ya se encuentra registrada.</li>
                                     <li>Rojo: : Indica que el servidor de la base de datos a la que se desea conectar no se encuentra disponible o que se han cambiado el usuario o la contraseña.</li>
                                 </ul>
 
-                            <p>El botón de color verde genera un reporte en formato Excel. Al dar clic sobre dicho botón, se desplegara las siguientes opciones:</p>
+                            <p>El botón de color verde genera un reporte en formato Excel. Al dar clic sobre dicho botón, se desplegarán las siguientes opciones:</p>
                             <ul>
                                 <li>Maquinaria y equipo</li>
                                 <li>Mobiliario y equipo de oficina</li>
@@ -109,7 +109,7 @@
                                 <li>Software</li>
                             </ul>
                                  
-                            <p>Seleccione cualquiera de estas opciones y en la parte inferior se descargara un archivo Excel con la información que selecciono previamente.</p>
+                            <p>Seleccione cualquiera de estas opciones y en la parte inferior se descargará un archivo Excel con la información que seleccionó previamente.</p>
 
                             <p>Al hacer clic sobre el botón de color rojo se mostrara un mensaje de confirmación para limpiar (Eliminar) toda la información de la tabla de paso. Esto con el fin de que pueda volver a realizar todo el proceso cada que lo requiera.</p>
 
@@ -189,8 +189,8 @@
     
 
      <!-- no funciona el javascrip de bootstrap -->
-    <!-- Bootstrap JS 
-     <script src="../Libs/js/bootstrap.min.js"></script>-->
+    <!-- Bootstrap JS -->
+     <script src="../Libs/js/bootstrap.min.js"></script>
 
     <!-- Alertifyjs JS -->
     <script src="../Libs/alertifyjs/alertify.min.js"></script>

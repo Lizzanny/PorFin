@@ -28,8 +28,6 @@
 
 <!--**************************************Bootstrap CSS*******************************************************************-->
     <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
 
 <!-- **************************************CSS  propio********************************************************************
     <link rel="stylesheet" href="../Libs/css/style4.css">
@@ -37,17 +35,18 @@
     <link rel="stylesheet" href="../Libs/css/animate.css">
     <link rel="stylesheet" href="../Libs/css/sina-nav.css">
 <!--***************************************DataTables*********************************************************************-->
-    <link rel="stylesheet" href="../Libs/css/tablestyle.css">
+    <link rel="stylesheet" href="../Libs/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/dtable/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="../Libs/DataTables/datatables.min.css">
+    <link rel="stylesheet" href="../Libs/css/tablestyle.css">
     
 <!--***************************************Alertify***********************************************************************-->
-    <link rel="stylesheet" href="../Libs/alertifyjs/css/alertify.min.css">
+    <link rel="stylesheet" href="../Libs/alertifyjs/css/alertify.rtl.min.css">
+    <link rel="stylesheet" href="../Libs/alertifyjs/css/themes/bootstrap.min.css">
    
 <!--***************************************Font Awesome JS*****************************************************************-->
     <script defer src="../Libs/fontAwesome/js/solid.js" ></script>
     <script defer src="https://kit.fontawesome.com/b9fc8f6309.js"></script>
-    <script defer src="../Libs/fontAwesome/js/fontawesome.js"></script>
 </head>
 <style>
 @font-face {
@@ -109,7 +108,7 @@
 <body>
 <div class="nav-container">
     <nav class="sina-nav mobile-sidebar navbar-transparent navbar-fixed" data-top="40" data-md-top="40" data-xl-top="40">
-        <div class="container-fluid">
+        <div class="container-fluid" style="background: #F5EFE3; border: 1px #D4C19C;">
             <div class="extension-nav">
                 <ul>
                     <li class="dropdown">   
@@ -192,8 +191,9 @@ if($rol == 'RFINCONTABLE' || $rol=='RFINADM'){ ?>
                             Contable
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="../EdoFin/estadoFin.php">Estado de situación financiera</a></li>
-                            <li><a href="#">Cedula financiera a cuenta 1117</a></li>
+                            <!--<li><a href="../EdoFin/estadoFin.php">Estado de situación financiera</a></li>-->
+                            <li><a href="http://172.30.10.72:8080/EdoFin" target="blank_">Estado de situación financiera</a></li>
+                            <li><a href="../repof/rcf.php">Cédula del I.V.A cuenta 1117</a></li>
                             <li><a data-toggle='modal' data-target='#generar'>Saldos de activo fijo por cuenta y Centro de costos</a></li>
                             <li><a href="../RAudit/TableRepor.php">Integración contable para auditores</a></li>
                             <li><a href="../Adquisiciones/index.php">Libro de inventarios y balances</a></li>
@@ -239,7 +239,7 @@ if($rol == 'RFINCONSOLIDACION' || $rol=='RFINADM'){ ?>
     <script src="../Libs/DataTables/pdfmake/vfs_fonts.js"></script>
     <script src="../Libs/DataTables/JSZip/jszip.min.js"></script>
     <script src="../Libs/DataTables/datatables.min.js"></script>
-
+    <script src="../Reportes/js/operaciones.js"></script>
     <!-- Bootstrap JS -->
     <script src="../Libs/js/bootstrap.min.js"></script>
 
